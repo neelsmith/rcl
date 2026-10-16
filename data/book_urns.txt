@@ -1,0 +1,65 @@
+book|urn
+Genesis|urn:cts:compnov:bible.genesis:
+Exodus|urn:cts:compnov:bible.exodus:
+Leviticus|urn:cts:compnov:bible.leviticus:
+Numbers|urn:cts:compnov:bible.numbers:
+Deuteronomy|urn:cts:compnov:bible.deuteronomy:
+Joshua|urn:cts:compnov:bible.joshua:
+Judges|urn:cts:compnov:bible.judges:
+Ruth|urn:cts:compnov:bible.ruth:
+1 Samuel|urn:cts:compnov:bible.1samuel:
+2 Samuel|urn:cts:compnov:bible.2samuel:
+1 Kings|urn:cts:compnov:bible.1kings:
+2 Kings|urn:cts:compnov:bible.2kings:
+Nehemiah|urn:cts:compnov:bible.nehemiah:
+Esther|urn:cts:compnov:bible.esther:
+Esther|urn:cts:compnov:bible.esther2:
+Job|urn:cts:compnov:bible.job:
+Psalm|urn:cts:compnov:bible.psalms:
+Proverbs|urn:cts:compnov:bible.proverbs:
+Ecclesiastes|urn:cts:compnov:bible.ecclesiastes:
+Song of Solomon|urn:cts:compnov:bible.songs:
+Isaiah|urn:cts:compnov:bible.isaiah:
+Jeremiah|urn:cts:compnov:bible.jeremiah:
+Lamentations|urn:cts:compnov:bible.lamentations:
+Ezekiel|urn:cts:compnov:bible.ezekiel:
+Daniel|urn:cts:compnov:bible.daniel:
+Daniel|urn:cts:compnov:bible.daniel2:
+Hosea|urn:cts:compnov:bible.hosea:
+Joel|urn:cts:compnov:bible.joel:
+Amos|urn:cts:compnov:bible.amos:
+Jonah|urn:cts:compnov:bible.jonah:
+Micah|urn:cts:compnov:bible.micah:
+Habakkuk|urn:cts:compnov:bible.habakkuk:
+Zephaniah|urn:cts:compnov:bible.zephaniah:
+Haggai|urn:cts:compnov:bible.haggai:
+Zechariah|urn:cts:compnov:bible.zechariah:
+Malachi|urn:cts:compnov:bible.malachi:
+Judith|urn:cts:compnov:bible.judith:
+Wisdom of Solomon|urn:cts:compnov:bible.wisdom:
+Sirach|urn:cts:compnov:bible.sirach:
+Baruch|urn:cts:compnov:bible.baruch:
+Matthew|urn:cts:compnov:bible.matthew:
+Mark|urn:cts:compnov:bible.mark:
+Luke|urn:cts:compnov:bible.luke:
+John|urn:cts:compnov:bible.john:
+Acts|urn:cts:compnov:bible.acts:
+Romans|urn:cts:compnov:bible.rom:
+1 Corinthians|urn:cts:compnov:bible.1corinthians:
+2 Corinthians|urn:cts:compnov:bible.2corinthians:
+Galatians|urn:cts:compnov:bible.galatians:
+Ephesians|urn:cts:compnov:bible.ephesians:
+Philippians|urn:cts:compnov:bible.philippians:
+Colossians|urn:cts:compnov:bible.colossians:
+1 Thessalonians|urn:cts:compnov:bible.1thessalonians:
+2 Thessalonians|urn:cts:compnov:bible.2thessalonians:
+1 Timothy|urn:cts:compnov:bible.1timothy:
+2 Timothy|urn:cts:compnov:bible.2timothy:
+Titus|urn:cts:compnov:bible.titus:
+Philemon|urn:cts:compnov:bible.philemon:
+Hebrews|urn:cts:compnov:bible.hebrews:
+James|urn:cts:compnov:bible.james:
+1 Peter|urn:cts:compnov:bible.1peter:
+2 Peter|urn:cts:compnov:bible.2peter:
+1 John|urn:cts:compnov:bible.1john:
+Revelation|urn:cts:compnov:bible.revelations:
