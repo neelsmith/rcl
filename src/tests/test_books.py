@@ -92,7 +92,7 @@ class BookTableDataTests(unittest.TestCase):
         self.assertEqual(t["Romans"], ["urn:cts:compnov:bible.rom:"])
         self.assertEqual(t["Daniel"], ["urn:cts:compnov:bible.daniel:",
                                        "urn:cts:compnov:bible.daniel2:"])
-        self.assertEqual(t["Luke"], [])
+        self.assertEqual(t["Luke"], ["urn:cts:compnov:bible.luke:"])
 
 
 if __name__ == "__main__":

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lectionary Readings</title>
+<meta name="description" content="Revised Common Lectionary readings (Episcopal use) for Sundays and Major Holy Days.">
+<style>
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --text: #22201c;
+  --muted: #6b665c;
+  --line: #e2ddd2;
+  --accent: #7a1f2b;          /* feast red */
+  --accent-soft: #f4e4e4;
+  --sunday: #1f4e79;          /* Sunday blue */
+  --sunday-soft: #e3ecf5;
+  --principal-soft: #f6ead0;
+  --principal: #8a5a00;
+  --fast: #5b3f7a;
+  --fast-soft: #ece5f3;
+  --today-ring: #c08a2b;
+  --selected: #22201c;
+  --selected-text: #ffffff;
+  --radius: 10px;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #171614;
+    --surface: #211f1c;
+    --text: #ece8df;
+    --muted: #a39d90;
+    --line: #36322c;
+    --accent: #e08a92;
+    --accent-soft: #3a2427;
+    --sunday: #8fb7e0;
+    --sunday-soft: #1e2c3a;
+    --principal-soft: #3a3020;
+    --principal: #e6bd6a;
+    --fast: #c3a8e3;
+    --fast-soft: #2c2438;
+    --today-ring: #e6bd6a;
+    --selected: #ece8df;
+    --selected-text: #171614;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: var(--sans); font-size: 16px; line-height: 1.5;
+}
+header.site {
+  max-width: 1120px; margin: 0 auto; padding: 24px 16px 8px;
+}
+header.site h1 {
+  font-family: var(--serif); font-weight: 600; font-size: 1.75rem; margin: 0;
+}
+header.site p { margin: 2px 0 0; color: var(--muted); font-size: 0.95rem; }
+main {
+  max-width: 1120px; margin: 0 auto; padding: 8px 16px 32px;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px;
+}
+@media (min-width: 900px) {
+  main { grid-template-columns: minmax(0, 470px) minmax(0, 1fr); align-items: start; }
+  .calendar { position: sticky; top: 16px; }
+}
+.panel {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px;
+}
+/* ------------------------------------------------------------ calendar */
+.cal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.cal-head h2 {
+  flex: 1; margin: 0; font-family: var(--serif); font-size: 1.25rem; font-weight: 600;
+}
+button, input { font: inherit; color: inherit; }
+.btn {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 8px;
+  padding: 6px 10px; cursor: pointer; min-height: 36px;
+}
+.btn:hover { border-color: var(--muted); }
+.btn:focus-visible, .day:focus-visible, input:focus-visible {
+  outline: 2px solid var(--today-ring); outline-offset: 2px;
+}
+.icon-btn { width: 36px; padding: 0; font-size: 1.1rem; line-height: 1; }
+.jump { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.jump input[type=date] {
+  border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
+  padding: 5px 8px; min-height: 36px; color-scheme: light dark;
+}
+.grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.dow {
+  text-align: center; font-size: 0.75rem; color: var(--muted); padding-bottom: 2px;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.dow.sun { color: var(--sunday); font-weight: 600; }
+.day {
+  position: relative; display: flex; flex-direction: column; align-items: stretch;
+  min-height: 62px; padding: 4px 4px 3px; border-radius: 8px;
+  border: 1px solid transparent; background: transparent; cursor: pointer; text-align: left;
+}
+.day:hover { border-color: var(--line); }
+.day .num { font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.day .lab {
+  font-size: 0.66rem; line-height: 1.15; margin-top: auto;
+  overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow-wrap: normal; word-break: normal; hyphens: auto;
+}
+.day.out { opacity: 0.45; }
+.day.sunday { background: var(--sunday-soft); }
+.day.sunday .num, .day.sunday .lab { color: var(--sunday); }
+.day.principal { background: var(--principal-soft); }
+.day.principal .num, .day.principal .lab { color: var(--principal); font-weight: 600; }
+.day.lordfeast, .day.majorfeast { background: var(--accent-soft); }
+.day.lordfeast .num, .day.lordfeast .lab, .day.majorfeast .num, .day.majorfeast .lab { color: var(--accent); }
+.day.holyday, .day.other { background: var(--fast-soft); }
+.day.holyday .num, .day.holyday .lab, .day.other .num, .day.other .lab { color: var(--fast); }
+.day.today { box-shadow: inset 0 0 0 2px var(--today-ring); }
+.day.selected { background: var(--selected); }
+.day.selected .num, .day.selected .lab { color: var(--selected-text); }
+.legend {
+  display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 12px;
+  font-size: 0.8rem; color: var(--muted);
+}
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.legend .k-sunday { background: var(--sunday-soft); border: 1px solid var(--sunday); }
+.legend .k-principal { background: var(--principal-soft); border: 1px solid var(--principal); }
+.legend .k-feast { background: var(--accent-soft); border: 1px solid var(--accent); }
+.legend .k-fast { background: var(--fast-soft); border: 1px solid var(--fast); }
+@media (max-width: 480px) {
+  .day { min-height: 54px; padding: 3px 2px; }
+  .day .lab { font-size: 0.58rem; }
+}
+/* ------------------------------------------------------------ readings */
+.readings h2.date {
+  font-family: var(--serif); font-weight: 600; font-size: 1.4rem; margin: 0 0 4px;
+}
+.obs { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 14px; }
+.obs:first-of-type { border-top: 0; padding-top: 0; margin-top: 8px; }
+.obs h3 { font-family: var(--serif); font-weight: 600; font-size: 1.2rem; margin: 0; }
+.obs.alternative h3 { font-size: 1.05rem; }
+.meta { color: var(--muted); font-size: 0.9rem; margin: 2px 0 10px; }
+.tag {
+  display: inline-block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;
+  border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; margin-right: 6px;
+  color: var(--muted);
+}
+table.lessons { width: 100%; border-collapse: collapse; }
+table.lessons th, table.lessons td {
+  text-align: left; vertical-align: top; padding: 6px 8px 6px 0; border-bottom: 1px solid var(--line);
+}
+table.lessons tr:last-child th, table.lessons tr:last-child td { border-bottom: 0; }
+table.lessons th[scope=row] {
+  width: 8.5em; font-weight: 500; color: var(--muted); font-size: 0.9rem;
+}
+table.lessons thead th { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+table.lessons td { font-family: var(--serif); font-size: 1.05rem; }
+.or { font-family: var(--sans); font-size: 0.8rem; color: var(--muted); font-style: italic; }
+.service { margin-top: 10px; }
+.service h4 { margin: 8px 0 2px; font-size: 0.95rem; }
+.note { font-size: 0.9rem; color: var(--muted); margin: 8px 0 0; }
+.notice {
+  background: var(--accent-soft); border-radius: 8px; padding: 8px 12px; margin: 10px 0 0;
+  font-size: 0.92rem;
+}
+.linkish {
+  border: 0; background: none; padding: 0; color: var(--sunday); text-decoration: underline;
+  cursor: pointer;
+}
+.empty p { margin: 6px 0; }
+.src { font-size: 0.8rem; margin-top: 8px; }
+.src a { color: var(--muted); }
+footer a { color: var(--sunday); }
+footer {
+  max-width: 1120px; margin: 0 auto; padding: 0 16px 32px; color: var(--muted); font-size: 0.8rem;
+}
+@media (max-width: 560px) {
+  table.lessons th[scope=row] { width: 6.5em; }
+  table.lessons td { font-size: 1rem; }
+}
+</style>
+</head>
+<body>
+<header class="site">
+  <h1>Lectionary Readings</h1>
+  <p>Revised Common Lectionary for Sundays and Major Holy Days, as authorized for the Episcopal Church</p>
+</header>
+<main>
+  <section class="calendar panel" aria-label="Calendar">
+    <div class="cal-head">
+      <button class="btn icon-btn" id="prev" type="button" aria-label="Previous month">&#8249;</button>
+      <h2 id="month-title" aria-live="polite"></h2>
+      <button class="btn icon-btn" id="next" type="button" aria-label="Next month">&#8250;</button>
+    </div>
+    <div class="jump">
+      <button class="btn" id="today" type="button">Today</button>
+      <label class="sr-only" for="date-input" style="position:absolute;left:-9999px">Go to date</label>
+      <input type="date" id="date-input" min="1900-01-01" max="2199-12-31">
+    </div>
+    <div class="grid" id="grid" role="grid" aria-labelledby="month-title"></div>
+    <div class="legend" aria-hidden="true">
+      <span><i class="k-sunday"></i>Sunday</span>
+      <span><i class="k-principal"></i>Principal Feast</span>
+      <span><i class="k-feast"></i>Major Feast</span>
+      <span><i class="k-fast"></i>Other holy day</span>
+    </div>
+  </section>
+  <section class="readings panel" id="readings" aria-live="polite"></section>
+</main>
+<footer>
+  Readings from <a href="https://www.lectionarypage.net/">lectionarypage.net</a>.
+  Data: <!-- @DATA_SUMMARY@ -->.
+</footer>
+<script type="text/plain" id="rcl-data">
+<!-- @DATA@ -->
+</script>
+<script>
+/* @LECTIONARY_JS@ */
+</script>
+<script>
+/* @APP_JS@ */
+</script>
+</body>
+</html>
