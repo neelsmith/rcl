@@ -1,0 +1,23 @@
+.DS_Store
+node_modules/
+dist/
+
+# Python (src/ utilities and tests)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Quarto render cache
+.quarto/
+
+# Editors and local environment
+.vscode/
+.idea/
+*.swp
+*~
+.env
+*.log
