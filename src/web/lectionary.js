@@ -329,8 +329,106 @@
     });
   }
 
+  // ------------------------------------------------- Old Testament texts
+  var VERSIONS = [
+    { id: "masoretic", label: "Masoretic", lang: "he", dir: "rtl" },
+    { id: "onkelos", label: "Onkelos", lang: "arc", dir: "rtl" },
+    { id: "septuagint", label: "Septuagint", lang: "grc", dir: "ltr" },
+    { id: "vulgate", label: "Vulgate", lang: "la", dir: "ltr" }
+  ];
+
+  /** Parse a #!ctsdata block: {text: {urn: text}, order: {work: [urn, ...]}, pos: {urn: index}}. */
+  function parseCex(text) {
+    var out = { text: {}, order: {}, pos: {} };
+    (text || "").split(/\r?\n/).forEach(function (line) {
+      if (line.indexOf("urn:") !== 0) return;
+      var bar = line.indexOf("|");
+      var urn = line.slice(0, bar), work = urn.split(":")[3];
+      out.text[urn] = line.slice(bar + 1);
+      var list = out.order[work] = out.order[work] || [];
+      out.pos[urn] = list.length;
+      list.push(urn);
+    });
+    return out;
+  }
+
+  /** Parse ot_index.txt: {"Book|selection": [{version, first, last, notes: [...]}, ...]}. */
+  function parseIndex(text) {
+    var out = {};
+    (text || "").split(/\r?\n/).slice(1).forEach(function (line) {
+      if (!line.trim()) return;
+      var f = line.split("|"), key = f[0] + "|" + f[1];
+      (out[key] = out[key] || []).push({
+        version: f[2], first: f[3], last: f[4], notes: f[5] ? f[5].split(" ") : []
+      });
+    });
+    return out;
+  }
+
+  /** Books that have Old Testament text in the index. */
+  function indexedBooks(index) {
+    var books = {};
+    Object.keys(index).forEach(function (k) { books[k.split("|")[0]] = 1; });
+    return books;
+  }
+
+  /** "Psalm 103:1-103:13, (103:22)" -> {book, selections: [{ref, optional}]}. */
+  function splitAlternative(alt) {
+    var m = /^(.*?[A-Za-z]) ([(\d].*)$/.exec(alt);
+    if (!m) return null;
+    var sels = [], depth = 0, cur = "", optional = false;
+    function push() {
+      var r = cur.trim();
+      if (r) sels.push({ ref: r, optional: optional || depth > 0 });
+      cur = "";
+    }
+    for (var i = 0; i < m[2].length; i++) {
+      var ch = m[2][i];
+      if (ch === "(") { depth++; optional = true; continue; }
+      if (ch === ")") { push(); depth--; optional = false; continue; }
+      if (ch === "," && depth >= 0) { push(); if (!depth) optional = false; continue; }
+      cur += ch;
+    }
+    push();
+    return { book: m[1], selections: sels };
+  }
+
+  /**
+   * Texts for one selection in the chosen versions:
+   * [{version, parts: [{passages: [{urn, ref, text}], notes}]}], in VERSIONS order.
+   */
+  function textsFor(cex, index, book, ref, versionIds) {
+    var rows = index[book + "|" + ref] || [];
+    return VERSIONS.filter(function (v) { return versionIds.indexOf(v.id) >= 0; }).map(function (v) {
+      var parts = rows.filter(function (r) { return r.version === v.id; }).map(function (r) {
+        var passages = [];
+        if (r.first && r.first in cex.pos) {
+          var work = r.first.split(":")[3], list = cex.order[work];
+          for (var i = cex.pos[r.first]; i <= cex.pos[r.last]; i++) {
+            passages.push({ urn: list[i], ref: list[i].split(":")[4], text: cex.text[list[i]] });
+          }
+        }
+        return { passages: passages, notes: r.notes };
+      });
+      return { version: v, available: rows.some(function (r) { return r.version === v.id; }), parts: parts };
+    });
+  }
+
+  /** Human-readable explanation of an index note code. */
+  function explainNote(code) {
+    var m = /^psalm=(\d+)$/.exec(code);
+    if (m) return "This psalm is numbered " + m[1] + " in this version.";
+    return {
+      titles: "Verse numbers follow this version, which may count the psalm\u2019s title as verse 1 or 2.",
+      missing: "No text at this reference in this version\u2019s numbering.",
+      partial: "Only part of the reference exists in this version\u2019s numbering."
+    }[code] || code;
+  }
+
   return {
-    COLUMNS: COLUMNS,
+    COLUMNS: COLUMNS, VERSIONS: VERSIONS,
+    parseCex: parseCex, parseIndex: parseIndex, indexedBooks: indexedBooks,
+    splitAlternative: splitAlternative, textsFor: textsFor, explainNote: explainNote,
     dayNumber: dayNumber, fromDayNumber: fromDayNumber, dayOfWeek: dayOfWeek,
     isoDate: isoDate, parseIsoDate: parseIsoDate, sundayOnOrAfter: sundayOnOrAfter,
     easter: easter, advent1: advent1, yearLetter: yearLetter,

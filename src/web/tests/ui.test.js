@@ -31,6 +31,12 @@ test("calendar and readings UI", { skip }, async (t) => {
       assert.equal(await page.locator(".day.selected").count(), 1);
     });
 
+    await t.test("shows the version in the footer", async () => {
+      const meta = await page.getAttribute('meta[name="version"]', "content");
+      assert.match(meta, /^\d+\.\d+\.\d+/);
+      assert.equal(await page.innerText("#app-version"), "v" + meta);
+    });
+
     await t.test("a Sunday shows both tracks and a transferred feast", async () => {
       await page.goto(url + "#2026-10-18");
       assert.equal(await page.innerText("#month-title"), "October 2026");
@@ -76,6 +82,31 @@ test("calendar and readings UI", { skip }, async (t) => {
       await page.fill("#date-input", "2026-12-25");
       await page.dispatchEvent("#date-input", "change");
       assert.equal(await page.locator("#readings .service").count(), 3);
+    });
+
+    await t.test("OT references show the chosen versions", async () => {
+      await page.goto(url + "#2026-10-18");
+      await page.evaluate(() => localStorage.clear());
+      await page.reload();
+      // NT references are plain text; OT references are buttons.
+      assert.equal(await page.locator('button.cite:has-text("Thessalonians")').count(), 0);
+      const psalm = page.locator('button.cite:has-text("Psalm 99")');
+      await psalm.click();
+      assert.match(await page.innerText(".texts"), /Choose one or more versions/);
+      await page.check("#ver-septuagint");
+      await page.check("#ver-masoretic");
+      // the open reference stays open when versions change
+      assert.equal(await page.locator(".texts .vtext").count(), 2);
+      assert.match(await page.innerText('.vtext[data-version="septuagint"] h5'), /Psalm 98:1/);
+      assert.match(await page.innerText('.vtext[data-version="septuagint"]'), /numbered 98/);
+      assert.equal(await page.getAttribute('.vtext[data-version="masoretic"] .vbody', "dir"), "rtl");
+      await page.locator('button.cite:has-text("Psalm 99")').click();
+      assert.equal(await page.locator(".texts").count(), 0);
+      // the choice of versions is remembered
+      await page.reload();
+      assert.equal(await page.isChecked("#ver-septuagint"), true);
+      await page.locator('button.cite:has-text("Exodus 33:12-23")').click();
+      assert.match(await page.innerText('.vtext[data-version="septuagint"] h5'), /Exodus 33:12-23/);
     });
 
     assert.deepEqual(errors, []);

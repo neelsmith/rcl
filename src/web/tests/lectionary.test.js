@@ -174,3 +174,66 @@ test("citation compaction", () => {
   assert.equal(R.compactText("Psalm: Psalm 118:1-118:2, 118:19-118:29."), "Psalm: Psalm 118:1-2, 19-29.");
   assert.equal(R.compactText("Psalm 9:9-9:20 goes with 1 Samuel 9:1-9:3."), "Psalm 9:9-20 goes with 1 Samuel 9:1-3.");
 });
+
+// ------------------------------------------------------------ Old Testament texts
+const CEX = [
+  "#!ctsdata",
+  "urn:cts:compnov:bible.psalms.masoretic:23.1|M1",
+  "urn:cts:compnov:bible.psalms.masoretic:23.2|M2",
+  "urn:cts:compnov:bible.psalms.septuagint:22.1|G1",
+  "urn:cts:compnov:bible.psalms.septuagint:22.2|G2",
+  "urn:cts:compnov:bible.psalms.septuagint:22.3|G3",
+].join("\n");
+const INDEX = [
+  "book|selection|version|first_urn|last_urn|note",
+  "Psalm|23|masoretic|urn:cts:compnov:bible.psalms.masoretic:23.1|urn:cts:compnov:bible.psalms.masoretic:23.2|titles",
+  "Psalm|23|septuagint|urn:cts:compnov:bible.psalms.septuagint:22.1|urn:cts:compnov:bible.psalms.septuagint:22.3|psalm=22 titles",
+  "Malachi|4:1-4:2a|masoretic|||missing",
+].join("\n");
+
+test("parse texts and index", () => {
+  const cex = R.parseCex(CEX);
+  assert.equal(cex.text["urn:cts:compnov:bible.psalms.septuagint:22.2"], "G2");
+  assert.equal(cex.order["bible.psalms.septuagint"].length, 3);
+  const idx = R.parseIndex(INDEX);
+  assert.deepEqual(idx["Psalm|23"][1].notes, ["psalm=22", "titles"]);
+  assert.deepEqual(Object.keys(R.indexedBooks(idx)).sort(), ["Malachi", "Psalm"]);
+});
+
+test("split an alternative into selections", () => {
+  assert.deepEqual(R.splitAlternative("Psalm 103:1-103:13, 103:22"),
+    { book: "Psalm", selections: [{ ref: "103:1-103:13", optional: false }, { ref: "103:22", optional: false }] });
+  assert.deepEqual(R.splitAlternative("1 Samuel (17:1a, 17:4-17:11), 17:32-17:49").selections,
+    [{ ref: "17:1a", optional: true }, { ref: "17:4-17:11", optional: true }, { ref: "17:32-17:49", optional: false }]);
+  assert.deepEqual(R.splitAlternative("Isaiah 58:1-58:9a, (58:9b-58:12)").selections.map((s) => s.optional), [false, true]);
+  assert.equal(R.splitAlternative("Psalm 42, 43").book, "Psalm");
+  assert.equal(R.splitAlternative("nonsense"), null);
+});
+
+test("texts for a selection, in version order", () => {
+  const cex = R.parseCex(CEX), idx = R.parseIndex(INDEX);
+  const t = R.textsFor(cex, idx, "Psalm", "23", ["septuagint", "masoretic", "onkelos"]);
+  assert.deepEqual(t.map((r) => r.version.id), ["masoretic", "onkelos", "septuagint"]);
+  assert.deepEqual(t[0].parts[0].passages.map((p) => p.text), ["M1", "M2"]);
+  assert.equal(t[1].available, false);
+  assert.deepEqual(t[2].parts[0].passages.map((p) => p.ref), ["22.1", "22.2", "22.3"]);
+  const m = R.textsFor(cex, idx, "Malachi", "4:1-4:2a", ["masoretic"]);
+  assert.equal(m[0].available, true);
+  assert.deepEqual(m[0].parts[0].passages, []);
+  assert.deepEqual(m[0].parts[0].notes, ["missing"]);
+  assert.match(R.explainNote("psalm=22"), /numbered 22/);
+});
+
+test("every OT selection in the real data resolves", () => {
+  const cex = R.parseCex(fs.readFileSync(path.join(DATA, "..", "ot_passages.cex"), "utf8"));
+  const idx = R.parseIndex(fs.readFileSync(path.join(DATA, "..", "ot_index.txt"), "utf8"));
+  for (const [key, list] of Object.entries(idx)) {
+    for (const r of list) {
+      if (!r.first) continue;
+      assert.ok(r.first in cex.pos && r.last in cex.pos, key);
+      assert.ok(cex.pos[r.first] <= cex.pos[r.last], key);
+    }
+  }
+  const ps = R.textsFor(cex, idx, "Psalm", "23", ["septuagint"])[0];
+  assert.match(ps.parts[0].passages[0].text, /Κύριος ποιμαίνει με/);
+});

@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lectionary Readings</title>
+<meta name="version" content="@VERSION@">
 <meta name="description" content="Revised Common Lectionary readings (Episcopal use) for Sundays and Major Holy Days.">
 <style>
 :root {
@@ -175,7 +176,38 @@ table.lessons td { font-family: var(--serif); font-size: 1.05rem; }
 .empty p { margin: 6px 0; }
 .src { font-size: 0.8rem; margin-top: 8px; }
 .src a { color: var(--muted); }
+/* ------------------------------------------------------------ OT texts */
+fieldset.versions {
+  border: 1px solid var(--line); border-radius: 8px; margin: 10px 0 4px; padding: 6px 12px 8px;
+  display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: center;
+}
+fieldset.versions legend { font-size: 0.8rem; color: var(--muted); padding: 0 4px; }
+fieldset.versions label { font-size: 0.92rem; cursor: pointer; display: inline-flex; gap: 4px; align-items: center; }
+fieldset.versions input { accent-color: var(--sunday); width: 16px; height: 16px; }
+fieldset.versions .hint { flex-basis: 100%; margin: 2px 0 0; font-size: 0.8rem; color: var(--muted); }
+button.cite {
+  font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: left;
+  text-decoration: underline dotted var(--sunday); text-underline-offset: 3px;
+}
+button.cite:hover { color: var(--sunday); }
+button.cite[aria-expanded=true] { color: var(--sunday); text-decoration-style: solid; }
+button.cite:focus-visible { outline: 2px solid var(--today-ring); outline-offset: 2px; border-radius: 3px; }
+tr.texts-row > td { padding: 4px 0 12px; font-family: var(--sans); font-size: 1rem; }
+.texts { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.texts h4 { margin: 4px 0 6px; font-size: 0.9rem; }
+.selection + .selection { margin-top: 12px; }
+.vgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.vtext h5 { margin: 0 0 4px; font-size: 0.8rem; color: var(--muted); font-weight: 600; letter-spacing: 0.02em; }
+.vbody p.verse { margin: 0 0 4px; font-family: var(--serif); font-size: 1.02rem; line-height: 1.55; }
+.vbody sup { color: var(--muted); font-family: var(--sans); font-size: 0.65rem; }
+.vbody[lang=he], .vbody[lang=arc] {
+  font-family: "SBL Hebrew", "Ezra SIL", "Taamey Frank CLM", "Times New Roman", serif;
+}
+.vbody[lang=he] p.verse, .vbody[lang=arc] p.verse { font-size: 1.25rem; line-height: 1.7; }
+.vbody[lang=grc] { font-family: "Gentium Plus", "GFS Didot", "Palatino Linotype", Georgia, serif; }
+.texts .note { margin-top: 4px; }
 footer a { color: var(--sunday); }
+footer .version { font-variant-numeric: tabular-nums; }
 footer {
   max-width: 1120px; margin: 0 auto; padding: 0 16px 32px; color: var(--muted); font-size: 0.8rem;
 }
@@ -213,11 +245,17 @@ footer {
   <section class="readings panel" id="readings" aria-live="polite"></section>
 </main>
 <footer>
-  Readings from <a href="https://www.lectionarypage.net/">lectionarypage.net</a>.
-  Data: <!-- @DATA_SUMMARY@ -->.
+  Readings from <a href="https://www.lectionarypage.net/">lectionarypage.net</a>; Old Testament texts from <a href="https://github.com/neelsmith/compnov">compnov</a>.
+  <span class="version" id="app-version">v@VERSION@</span> &middot; <!-- @DATA_SUMMARY@ -->.
 </footer>
 <script type="text/plain" id="rcl-data">
 <!-- @DATA@ -->
+</script>
+<script type="text/plain" id="ot-index">
+<!-- @OT_INDEX@ -->
+</script>
+<script type="text/plain" id="ot-texts">
+<!-- @OT_TEXTS@ -->
 </script>
 <script>
 /* @LECTIONARY_JS@ */

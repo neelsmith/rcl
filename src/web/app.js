@@ -3,6 +3,10 @@
   "use strict";
   var R = window.RCL;
   var rows = R.parseData(document.getElementById("rcl-data").textContent);
+  var cex = R.parseCex(document.getElementById("ot-texts").textContent);
+  var otIndex = R.parseIndex(document.getElementById("ot-index").textContent);
+  var otBooks = R.indexedBooks(otIndex);
+  var VERSIONS_KEY = "rcs.versions";
 
   var SEASONS = {
     advent: "Advent", christmas: "Christmas", epiphany: "Season after the Epiphany",
@@ -51,7 +55,21 @@
     return n;
   }
 
-  var state = { selected: todayDn(), viewY: 0, viewM: 0 };
+  function loadVersions() {
+    try {
+      var v = JSON.parse(localStorage.getItem(VERSIONS_KEY) || "[]");
+      return Array.isArray(v) ? v.filter(function (x) {
+        return R.VERSIONS.some(function (d) { return d.id === x; });
+      }) : [];
+    } catch (e) { return []; }
+  }
+  function saveVersions(v) {
+    try { localStorage.setItem(VERSIONS_KEY, JSON.stringify(v)); } catch (e) { /* storage unavailable */ }
+  }
+
+  // `open` is the key of the citation whose texts are shown (stable for a given date).
+  var state = { selected: todayDn(), viewY: 0, viewM: 0, versions: loadVersions(), open: null };
+  var citeCounter = 0;
 
   function primaryOf(list) {
     for (var i = 0; i < list.length; i++) if (list[i].role === "primary") return list[i];
@@ -93,13 +111,129 @@
   // ------------------------------------------------------------ readings
   function citationCell(text) {
     var td = h("td");
-    if (!text) { td.textContent = "—"; return td; }
-    R.compactCitation(text).split(" or ").forEach(function (alt, i) {
+    if (!text) { td.textContent = "\u2014"; return td; }
+    text.split(" or ").forEach(function (alt, i) {
       if (i) td.appendChild(h("span", { class: "or", text: " or " }));
-      td.appendChild(document.createTextNode(alt));
+      var shown = R.compactCitation(alt), parsed = R.splitAlternative(alt);
+      if (parsed && otBooks[parsed.book]) {
+        var key = "c" + (citeCounter++);
+        td.appendChild(h("button", {
+          type: "button", class: "cite", "data-cite": key, "data-alt": alt, "aria-expanded": "false",
+          title: "Show the text of " + shown, text: shown,
+          onclick: function (ev) { toggleTexts(ev.currentTarget); }
+        }));
+      } else {
+        td.appendChild(document.createTextNode(shown));
+      }
     });
     td.title = text;
     return td;
+  }
+
+  // ------------------------------------------------------------ OT texts
+  function versionRange(passages) {
+    if (!passages.length) return "";
+    var a = passages[0].ref.split("."), b = passages[passages.length - 1].ref.split(".");
+    if (passages.length === 1) return a[0] + ":" + a[1];
+    return a[0] + ":" + a[1] + "-" + (a[0] === b[0] ? b[1] : b[0] + ":" + b[1]);
+  }
+
+  function versionBlock(result, book) {
+    var v = result.version;
+    var box = h("div", { class: "vtext", "data-version": v.id });
+    var passages = [], notes = [];
+    result.parts.forEach(function (part) {
+      passages = passages.concat(part.passages);
+      part.notes.forEach(function (n) { if (notes.indexOf(n) < 0) notes.push(n); });
+    });
+    var head = v.label;
+    var ranges = result.parts.map(function (p) { return versionRange(p.passages); }).filter(Boolean);
+    if (ranges.length) head += " \u00b7 " + book + " " + ranges.join(", ");
+    box.appendChild(h("h5", { text: head }));
+    if (!result.available) {
+      box.appendChild(h("p", { class: "note", text: "Not in this version." }));
+      return box;
+    }
+    var body = h("div", { class: "vbody", lang: v.lang, dir: v.dir });
+    passages.forEach(function (p) {
+      body.appendChild(h("p", { class: "verse" }, [
+        h("sup", { text: p.ref.split(".")[1] }), " ", p.text
+      ]));
+    });
+    box.appendChild(body);
+    notes.forEach(function (n) { box.appendChild(h("p", { class: "note", text: R.explainNote(n) })); });
+    return box;
+  }
+
+  function textsPanel(alt) {
+    var parsed = R.splitAlternative(alt);
+    var wrap = h("div", { class: "texts" });
+    if (!state.versions.length) {
+      wrap.appendChild(h("p", { class: "note", text: "Choose one or more versions above to show the text." }));
+      return wrap;
+    }
+    parsed.selections.forEach(function (sel) {
+      var group = h("div", { class: "selection" });
+      if (parsed.selections.length > 1 || sel.optional) {
+        group.appendChild(h("h4", { text: R.compactCitation(parsed.book + " " + sel.ref) +
+          (sel.optional ? " (optional)" : "") }));
+      }
+      var grid = h("div", { class: "vgrid" });
+      R.textsFor(cex, otIndex, parsed.book, sel.ref, state.versions).forEach(function (res) {
+        grid.appendChild(versionBlock(res, parsed.book));
+      });
+      group.appendChild(grid);
+      wrap.appendChild(group);
+    });
+    return wrap;
+  }
+
+  function closeTexts(scope) {
+    Array.prototype.forEach.call(scope.querySelectorAll("tr.texts-row"), function (tr) { tr.remove(); });
+    Array.prototype.forEach.call(scope.querySelectorAll(".cite[aria-expanded=true]"), function (b) {
+      b.setAttribute("aria-expanded", "false");
+    });
+  }
+
+  function openTexts(btn) {
+    closeTexts(el.readings);
+    var tr = btn.closest("tr"), cols = 0;
+    Array.prototype.forEach.call(tr.children, function (c) { cols += c.colSpan || 1; });
+    var row = h("tr", { class: "texts-row" }, [h("td", { colspan: String(cols) },
+      [textsPanel(btn.getAttribute("data-alt"))])]);
+    tr.parentNode.insertBefore(row, tr.nextSibling);
+    btn.setAttribute("aria-expanded", "true");
+    state.open = btn.getAttribute("data-cite");
+  }
+
+  function toggleTexts(btn) {
+    if (btn.getAttribute("aria-expanded") === "true") {
+      closeTexts(el.readings);
+      state.open = null;
+    } else {
+      openTexts(btn);
+    }
+  }
+
+  function versionChooser() {
+    var box = h("fieldset", { class: "versions" }, [h("legend", { text: "Old Testament texts" })]);
+    R.VERSIONS.forEach(function (v) {
+      var id = "ver-" + v.id;
+      var input = h("input", { type: "checkbox", id: id, value: v.id });
+      input.checked = state.versions.indexOf(v.id) >= 0;
+      input.addEventListener("change", function () {
+        state.versions = R.VERSIONS.map(function (d) { return d.id; }).filter(function (x) {
+          return document.getElementById("ver-" + x).checked;
+        });
+        saveVersions(state.versions);
+        renderReadings();
+        var again = document.getElementById(id);
+        if (again) again.focus();
+      });
+      box.appendChild(h("label", { for: id }, [input, " " + v.label]));
+    });
+    box.appendChild(h("p", { class: "hint", text: "Click an Old Testament reference to show its text." }));
+    return box;
   }
 
   function lessonsTable(rs) {
@@ -171,7 +305,7 @@
     var season = o.rows.length ? SEASONS[o.rows[0].season] || "" : "";
     var meta = [o.rows.length && o.rows[0].year === "ABC" ? "All years" : "Year " + o.letter];
     if (season) meta.push(season);
-    sec.appendChild(h("p", { class: "meta", text: meta.join(" · ") }));
+    sec.appendChild(h("p", { class: "meta", text: meta.join(" \u00b7 ") }));
     if (o.note === "transferred-from") {
       sec.appendChild(h("p", { class: "notice" }, ["Transferred from ", goButton(o.otherDn, shortDate(o.otherDn)), "."]));
     }
@@ -192,6 +326,7 @@
 
   function renderReadings() {
     var dn = state.selected, list = R.observancesOn(rows, dn);
+    citeCounter = 0;
     el.readings.textContent = "";
     el.readings.appendChild(h("h2", { class: "date", text: longDate(dn) }));
     var shown = list.filter(function (o) { return o.role !== "transferred"; });
@@ -202,16 +337,22 @@
       var nxt = R.nextObservance(rows, dn);
       if (nxt) {
         box.appendChild(h("p", {}, ["Next: ", goButton(nxt.dn,
-          shortDate(nxt.dn) + " — " + R.shortLabel(nxt.observances[0]))]));
+          shortDate(nxt.dn) + " \u2014 " + R.shortLabel(nxt.observances[0]))]));
       }
       el.readings.appendChild(box);
     }
     list.forEach(function (o) { el.readings.appendChild(observanceSection(o)); });
+    if (shown.length) el.readings.insertBefore(versionChooser(), el.readings.children[1]);
+    if (state.open) {
+      var btn = el.readings.querySelector('[data-cite="' + state.open + '"]');
+      if (btn) openTexts(btn); else state.open = null;
+    }
   }
 
   // ------------------------------------------------------------ state
   function select(dn, opts) {
     var hadFocus = !!(document.activeElement && el.grid.contains(document.activeElement));
+    if (dn !== state.selected) state.open = null;
     state.selected = dn;
     var p = R.fromDayNumber(dn);
     state.viewY = p.y; state.viewM = p.m;
