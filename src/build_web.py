@@ -1,22 +1,25 @@
 """Build the self-contained web app: dist/index.html.
 
 Inlines data/rcl_readings.txt, data/ot_index.txt and data/ot_passages.cex (made by
-src/rcl/passages.py), src/web/lectionary.js and src/web/app.js into
+src/rcl/passages.py), data/psalm_audio_map.txt (the default psalm-recording
+mapping, see src/rcl/audio.py), src/web/lectionary.js, src/web/audio.js and src/web/app.js into
 src/web/template.html, so the result works from a web server or as a local
 file. The data file is validated first; the build stops on errors.
 
-The version comes from the VERSION file at the repository root (semantic
-versioning, e.g. 0.1.0). Builds that are not an exact tagged release get git
+The version comes from the "version" field of package.json at the repository
+root (semantic versioning, e.g. 0.1.0). Builds that are not an exact tagged release get git
 build metadata appended, e.g. 0.1.0+3f2a9c1 or 0.1.0+3f2a9c1-dirty.
 
 Usage (from the repository root):
-    python3 src/build_web.py [--release] [output_path]
+    npm run build            (= python3 src/build_web.py [output_path])
+    npm run build:release    (= python3 src/build_web.py --release)
 
 --release refuses to build unless the working tree is clean and HEAD is
-tagged v<VERSION> (e.g. v0.1.0), so a file attached to a GitHub release always
+tagged v<version> (e.g. v0.1.0), so a file attached to a GitHub release always
 matches its tag.
 """
 import datetime
+import json
 import os
 import re
 import subprocess
@@ -32,7 +35,8 @@ WEB = os.path.join(HERE, "web")
 DATA = os.path.join(ROOT, "data", "rcl_readings.txt")
 OT_INDEX = os.path.join(ROOT, "data", "ot_index.txt")
 OT_TEXTS = os.path.join(ROOT, "data", "ot_passages.cex")
-VERSION_FILE = os.path.join(ROOT, "VERSION")
+AUDIO_MAP = os.path.join(ROOT, "data", "psalm_audio_map.txt")
+PACKAGE_JSON = os.path.join(ROOT, "package.json")
 DEFAULT_OUT = os.path.join(ROOT, "dist", "index.html")
 
 # Semantic Versioning 2.0.0 core with optional pre-release (no build metadata in the file).
@@ -49,11 +53,22 @@ def read(path):
 
 # ------------------------------------------------------------------ version
 def parse_version(text):
-    """Return the version in a VERSION file's text; raise ValueError if invalid."""
-    version = text.strip()
-    if not SEMVER.match(version):
-        raise ValueError(f"VERSION must be a semantic version like 0.1.0, not {version!r}")
+    """Validate a version string; raise ValueError if it is not a semantic version."""
+    version = text.strip() if isinstance(text, str) else text
+    if not isinstance(version, str) or not SEMVER.match(version):
+        raise ValueError(f"version must be a semantic version like 0.1.0, not {version!r}")
     return version
+
+
+def package_version(package_json_text):
+    """The "version" field of package.json text, validated."""
+    try:
+        data = json.loads(package_json_text)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"package.json is not valid JSON: {exc}") from exc
+    if not isinstance(data, dict) or "version" not in data:
+        raise ValueError('package.json has no "version" field')
+    return parse_version(data["version"])
 
 
 def git_info(root=ROOT):
@@ -96,14 +111,15 @@ def release_errors(version, info):
 
 # -------------------------------------------------------------------- build
 def build(data_text, template, lectionary_js, app_js, today=None, version="0.0.0",
-          ot_index="", ot_texts=""):
+          ot_index="", ot_texts="", audio_js="", audio_map=""):
     """Return the finished HTML. Raises ValueError if the data is invalid."""
     lines = data_text.splitlines()
     errors = validate_lines(lines)
     if errors:
         raise ValueError("data file is invalid:\n  " + "\n  ".join(errors[:20]))
     for name, text in (("data", data_text), ("lectionary.js", lectionary_js), ("app.js", app_js),
-                       ("ot_index.txt", ot_index), ("ot_passages.cex", ot_texts)):
+                       ("ot_index.txt", ot_index), ("ot_passages.cex", ot_texts),
+                       ("audio.js", audio_js), ("psalm_audio_map.txt", audio_map)):
         if "</script" in text.lower():
             raise ValueError(f"{name} contains '</script', which would break the page")
     rows = len([ln for ln in lines if ln.strip()]) - 1
@@ -114,6 +130,8 @@ def build(data_text, template, lectionary_js, app_js, today=None, version="0.0.0
         "<!-- @DATA_SUMMARY@ -->": (f"{rows} entries, built {today}", 1),
         "<!-- @OT_INDEX@ -->": (ot_index.strip(), 1),
         "<!-- @OT_TEXTS@ -->": (ot_texts.strip(), 1),
+        "<!-- @AUDIO_MAP@ -->": (audio_map.strip(), 1),
+        "/* @AUDIO_JS@ */": (audio_js, 1),
         "@VERSION@": (version, None),
         "/* @LECTIONARY_JS@ */": (lectionary_js, 1),
         "/* @APP_JS@ */": (app_js, 1),
@@ -133,7 +151,7 @@ def main(argv=None):
     args = [a for a in argv if a != "--release"]
     out = args[0] if args else DEFAULT_OUT
     try:
-        version = parse_version(read(VERSION_FILE))
+        version = package_version(read(PACKAGE_JSON))
         info = git_info()
         if release:
             problems = release_errors(version, info)
@@ -142,7 +160,8 @@ def main(argv=None):
         shown = display_version(version, info)
         html = build(read(DATA), read(os.path.join(WEB, "template.html")),
                      read(os.path.join(WEB, "lectionary.js")), read(os.path.join(WEB, "app.js")),
-                     version=shown, ot_index=read(OT_INDEX), ot_texts=read(OT_TEXTS))
+                     version=shown, ot_index=read(OT_INDEX), ot_texts=read(OT_TEXTS),
+                     audio_js=read(os.path.join(WEB, "audio.js")), audio_map=read(AUDIO_MAP))
     except (OSError, ValueError) as exc:
         print(f"build failed: {exc}", file=sys.stderr)
         return 1

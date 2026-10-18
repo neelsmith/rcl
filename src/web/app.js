@@ -125,9 +125,280 @@
       } else {
         td.appendChild(document.createTextNode(shown));
       }
+      var play = playButton(alt, shown);
+      if (play) td.appendChild(play);
     });
     td.title = text;
     return td;
+  }
+
+  // ------------------------------------------------------------ recordings
+  // Audio is optional and off until the user chooses where recordings are:
+  //  - a folder picked with the File System Access API (remembered, Chromium browsers),
+  //  - a folder picked with <input webkitdirectory> (other browsers; this visit only), or
+  //  - a folder path / web address typed in (remembered).
+  var A = window.RCLAudio;
+  var AUDIO_KEYS = { base: "rcl.audio.base", map: "rcl.audio.map", mapName: "rcl.audio.mapName" };
+  var BUILTIN_MAP = document.getElementById("audio-map").textContent;
+  var audio = { source: null, pendingHandle: null, mapName: "", parsed: A.parseMap(BUILTIN_MAP),
+    queue: [], pos: 0, objectUrl: null, playingAlt: null };
+  var ael = {
+    badge: document.getElementById("audio-badge"),
+    sourceStatus: document.getElementById("audio-source-status"),
+    folderBtn: document.getElementById("audio-folder-btn"),
+    reconnectBtn: document.getElementById("audio-reconnect-btn"),
+    offBtn: document.getElementById("audio-off-btn"),
+    folderInput: document.getElementById("audio-folder-input"),
+    baseForm: document.getElementById("audio-base-form"),
+    base: document.getElementById("audio-base"),
+    mapStatus: document.getElementById("audio-map-status"),
+    mapBtn: document.getElementById("audio-map-btn"),
+    mapReset: document.getElementById("audio-map-reset"),
+    mapInput: document.getElementById("audio-map-input"),
+    player: document.getElementById("player"),
+    playerTitle: document.getElementById("player-title"),
+    playerMeta: document.getElementById("player-meta"),
+    playerAudio: document.getElementById("player-audio"),
+    playerClose: document.getElementById("player-close")
+  };
+
+  function store(key, value) {
+    try { if (value === null) localStorage.removeItem(key); else localStorage.setItem(key, value); } catch (e) { /* unavailable */ }
+  }
+  function stored(key) {
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+  }
+
+  // Remember a picked directory handle (Chromium) in IndexedDB.
+  function idb(mode, fn) {
+    return new Promise(function (resolve) {
+      try {
+        var req = indexedDB.open("rcl-audio", 1);
+        req.onupgradeneeded = function () { req.result.createObjectStore("handles"); };
+        req.onsuccess = function () {
+          var tx = req.result.transaction("handles", mode), st = tx.objectStore("handles");
+          var r = fn(st);
+          tx.oncomplete = function () { resolve(r && r.result); };
+          tx.onerror = tx.onabort = function () { resolve(null); };
+        };
+        req.onerror = function () { resolve(null); };
+      } catch (e) { resolve(null); }
+    });
+  }
+  function saveHandle(handle) { return idb("readwrite", function (st) { return handle ? st.put(handle, "music") : st.delete("music"); }); }
+  function loadHandle() { return idb("readonly", function (st) { return st.get("music"); }); }
+
+  function audioOn() { return !!audio.source; }
+
+  function setSource(src) {
+    audio.source = src;
+    if (!src || src.kind !== "handle") saveHandle(null);
+    if (!src || src.kind !== "url") store(AUDIO_KEYS.base, null);
+    if (src && src.kind === "url") store(AUDIO_KEYS.base, src.base);
+    if (src && src.kind === "handle") saveHandle(src.handle);
+    if (!src) closePlayer();
+    audio.pendingHandle = null;
+    updateAudioSettings();
+    renderReadings();
+  }
+
+  function updateAudioSettings() {
+    var s = audio.source, msg;
+    if (!s && audio.pendingHandle) {
+      msg = "“" + audio.pendingHandle.name + "” needs your permission again. Click Reconnect.";
+    } else if (!s) {
+      msg = "Not set. Recordings are off.";
+    } else if (s.kind === "url") {
+      msg = "Recordings from " + s.base;
+    } else if (s.kind === "handle") {
+      msg = "Recordings from the folder “" + s.handle.name + "” (remembered).";
+    } else {
+      msg = "Recordings from the folder “" + s.name + "” (" + Object.keys(s.index).length +
+        " files; choose it again on your next visit).";
+    }
+    ael.sourceStatus.textContent = msg;
+    ael.sourceStatus.className = "status" + (!s && audio.pendingHandle ? " warn" : "");
+    ael.reconnectBtn.hidden = !audio.pendingHandle;
+    ael.offBtn.hidden = !s;
+    ael.badge.textContent = s ? "on" : "off";
+    ael.badge.className = "badge" + (s ? " on" : "");
+    if (s && s.kind === "url") ael.base.value = s.base;
+    var p = audio.parsed, name = audio.mapName;
+    var count = Object.keys(p.map).length;
+    ael.mapStatus.textContent = (name ? "Custom mapping “" + name + "”" : "Built-in mapping") +
+      ": " + count + " psalm selection" + (count === 1 ? "" : "s") +
+      (p.errors.length ? "; " + p.errors.length + " line" + (p.errors.length === 1 ? "" : "s") +
+        " could not be read (" + p.errors[0] + ")" : ".");
+    ael.mapStatus.className = "status" + (p.errors.length ? " warn" : "");
+    ael.mapReset.hidden = !name;
+  }
+
+  function setMap(text, name) {
+    var parsed = A.parseMap(text);
+    if (name && !parsed.count) {
+      ael.mapStatus.textContent = "“" + name + "” was not used: " + (parsed.errors[0] || "no psalm selections found.");
+      ael.mapStatus.className = "status warn";
+      return;
+    }
+    audio.parsed = parsed;
+    audio.mapName = name || "";
+    store(AUDIO_KEYS.map, name ? text : null);
+    store(AUDIO_KEYS.mapName, name || null);
+    updateAudioSettings();
+    renderReadings();
+  }
+
+  /** URL for a recording, or null if it cannot be found. */
+  function recordingUrl(file) {
+    var s = audio.source;
+    if (!s) return Promise.resolve(null);
+    if (s.kind === "url") return Promise.resolve(A.joinUrl(s.base, file));
+    if (s.kind === "picked") {
+      var f = A.findPicked(s.index, file);
+      return Promise.resolve(f ? URL.createObjectURL(f) : null);
+    }
+    // directory handle: walk the path
+    var parts = file.split("/");
+    return parts.slice(0, -1).reduce(function (p, name) {
+      return p.then(function (dir) { return dir.getDirectoryHandle(name); });
+    }, Promise.resolve(s.handle)).then(function (dir) {
+      return dir.getFileHandle(parts[parts.length - 1]);
+    }).then(function (fh) { return fh.getFile(); }).then(function (f) {
+      return URL.createObjectURL(f);
+    }).catch(function () { return null; });
+  }
+
+  function playButton(alt, shown) {
+    var recs = A.recordingsFor(audio.parsed.map, alt, R.splitAlternative);
+    if (!audioOn() || !recs.length) return null;
+    var playing = audio.playingAlt === alt && !ael.player.hidden;
+    return h("button", {
+      type: "button", class: "play" + (playing ? " playing" : ""), "data-alt": alt,
+      "aria-label": "Play a recording of " + shown, title: "Play a recording of " + shown, text: "▶",
+      onclick: function () { playQueue(recs, alt, shown); }
+    });
+  }
+
+  function markPlaying() {
+    Array.prototype.forEach.call(document.querySelectorAll("button.play"), function (b) {
+      b.classList.toggle("playing", !ael.player.hidden && b.getAttribute("data-alt") === audio.playingAlt);
+    });
+  }
+
+  function playQueue(recs, alt, shown) {
+    audio.queue = recs; audio.pos = 0; audio.playingAlt = alt; audio.shown = shown;
+    playCurrent();
+  }
+
+  function playCurrent() {
+    var rec = audio.queue[audio.pos];
+    if (!rec) { closePlayer(); return; }
+    var d = A.describe(rec.file);
+    ael.player.hidden = false;
+    document.body.classList.add("has-player");
+    ael.playerTitle.textContent = audio.shown + (audio.queue.length > 1 ? " (" + (audio.pos + 1) + " of " + audio.queue.length + ")" : "");
+    var meta = [d.title, d.album, d.artist].filter(Boolean).join(" · ");
+    ael.playerMeta.textContent = meta;
+    if (rec.coverage === "excerpt") {
+      ael.playerMeta.appendChild(h("div", { text: "The recording has more than the appointed verses (" +
+        R.compactCitation("Psalm " + rec.selections.join(", ")) + ")." }));
+    }
+    markPlaying();
+    recordingUrl(rec.file).then(function (url) {
+      if (audio.queue[audio.pos] !== rec) return;
+      if (audio.objectUrl) { URL.revokeObjectURL(audio.objectUrl); audio.objectUrl = null; }
+      if (!url) { showPlayerError("Not found in your music folder: " + rec.file); return; }
+      if (url.indexOf("blob:") === 0) audio.objectUrl = url;
+      ael.playerAudio.src = url;
+      var p = ael.playerAudio.play();
+      if (p && p.catch) p.catch(function () { /* autoplay refused or load error: handled by error event */ });
+    });
+  }
+
+  function showPlayerError(text) {
+    ael.playerMeta.appendChild(h("div", { class: "warn", text: text }));
+  }
+
+  function closePlayer() {
+    ael.playerAudio.pause();
+    ael.playerAudio.removeAttribute("src");
+    ael.playerAudio.load();
+    if (audio.objectUrl) { URL.revokeObjectURL(audio.objectUrl); audio.objectUrl = null; }
+    ael.player.hidden = true;
+    document.body.classList.remove("has-player");
+    audio.queue = []; audio.playingAlt = null;
+    markPlaying();
+  }
+
+  ael.playerAudio.addEventListener("ended", function () {
+    if (audio.pos + 1 < audio.queue.length) { audio.pos++; playCurrent(); } else { markPlaying(); }
+  });
+  ael.playerAudio.addEventListener("error", function () {
+    if (!ael.playerAudio.getAttribute("src")) return;
+    var rec = audio.queue[audio.pos];
+    showPlayerError("Could not load " + (rec ? rec.file : "the recording") + ". Check the music folder setting.");
+  });
+  ael.playerClose.addEventListener("click", closePlayer);
+
+  ael.folderBtn.addEventListener("click", function () {
+    if (window.showDirectoryPicker) {
+      window.showDirectoryPicker({ id: "rcl-music", mode: "read" }).then(function (handle) {
+        setSource({ kind: "handle", handle: handle });
+      }).catch(function () { /* cancelled */ });
+    } else {
+      ael.folderInput.click();
+    }
+  });
+  ael.folderInput.addEventListener("change", function () {
+    var files = ael.folderInput.files;
+    if (!files || !files.length) return;
+    var first = files[0].webkitRelativePath || files[0].name;
+    setSource({ kind: "picked", index: A.indexPicked(files), name: first.split("/")[0] });
+    ael.folderInput.value = "";
+  });
+  ael.reconnectBtn.addEventListener("click", function () {
+    var handle = audio.pendingHandle;
+    if (!handle) return;
+    handle.requestPermission({ mode: "read" }).then(function (state) {
+      if (state === "granted") setSource({ kind: "handle", handle: handle });
+    }).catch(function () { /* refused */ });
+  });
+  ael.offBtn.addEventListener("click", function () { setSource(null); });
+  ael.baseForm.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var base = A.normalizeBase(ael.base.value);
+    if (base === null) {
+      ael.sourceStatus.textContent = "Enter a full path (starting with /) or a web address.";
+      ael.sourceStatus.className = "status warn";
+      return;
+    }
+    setSource(base ? { kind: "url", base: base } : null);
+  });
+  ael.mapBtn.addEventListener("click", function () { ael.mapInput.click(); });
+  ael.mapInput.addEventListener("change", function () {
+    var f = ael.mapInput.files && ael.mapInput.files[0];
+    if (!f) return;
+    f.text().then(function (text) { setMap(text, f.name); });
+    ael.mapInput.value = "";
+  });
+  ael.mapReset.addEventListener("click", function () { setMap(BUILTIN_MAP, ""); });
+
+  function initAudio() {
+    var mapText = stored(AUDIO_KEYS.map), mapName = stored(AUDIO_KEYS.mapName);
+    if (mapText && mapName) { audio.parsed = A.parseMap(mapText); audio.mapName = mapName; }
+    var base = stored(AUDIO_KEYS.base);
+    if (base) audio.source = { kind: "url", base: base };
+    updateAudioSettings();
+    if (audio.source || !window.indexedDB) return;
+    loadHandle().then(function (handle) {
+      if (!handle || audio.source) return;
+      var q = handle.queryPermission ? handle.queryPermission({ mode: "read" }) : Promise.resolve("prompt");
+      q.then(function (state) {
+        if (state === "granted") { audio.source = { kind: "handle", handle: handle }; renderReadings(); }
+        else audio.pendingHandle = handle;
+        updateAudioSettings();
+      });
+    });
   }
 
   // ------------------------------------------------------------ OT texts
@@ -391,6 +662,7 @@
     if (dn !== null && dn !== state.selected) select(dn, { focus: false });
   });
 
+  initAudio();
   var initial = R.parseIsoDate(location.hash.slice(1));
   select(initial !== null ? initial : todayDn(), { focus: false });
 })();

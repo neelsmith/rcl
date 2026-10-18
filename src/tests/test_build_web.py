@@ -11,6 +11,7 @@ TEMPLATE = ("<meta name='version' content='@VERSION@'><p>v@VERSION@ <!-- @DATA_S
             "<script type='text/plain'><!-- @DATA@ --></script>"
             "<script type='text/plain'><!-- @OT_INDEX@ --></script>"
             "<script type='text/plain'><!-- @OT_TEXTS@ --></script>"
+            "<script type='text/plain'><!-- @AUDIO_MAP@ --></script><script>/* @AUDIO_JS@ */</script>"
             "<script>/* @LECTIONARY_JS@ */</script><script>/* @APP_JS@ */</script>")
 
 
@@ -46,9 +47,13 @@ class BuildTests(unittest.TestCase):
             build_web.read(os.path.join(build_web.WEB, "template.html")),
             build_web.read(os.path.join(build_web.WEB, "lectionary.js")),
             build_web.read(os.path.join(build_web.WEB, "app.js")),
-            ot_index=build_web.read(build_web.OT_INDEX), ot_texts=build_web.read(build_web.OT_TEXTS))
+            ot_index=build_web.read(build_web.OT_INDEX), ot_texts=build_web.read(build_web.OT_TEXTS),
+            audio_js=build_web.read(os.path.join(build_web.WEB, "audio.js")),
+            audio_map=build_web.read(build_web.AUDIO_MAP))
         self.assertIn('id="rcl-data"', html)
         self.assertIn("urn:cts:compnov:bible.psalms.septuagint:22.1|", html)
+        self.assertIn("selection|psalm|file|coverage", html)
+        self.assertIn("RCLAudio", html)
         self.assertIn("a-advent-1|", html)
 
 
@@ -67,8 +72,14 @@ class VersionTests(unittest.TestCase):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 build_web.parse_version(bad)
 
-    def test_repository_version_file_is_valid(self):
-        build_web.parse_version(build_web.read(build_web.VERSION_FILE))
+    def test_package_version(self):
+        self.assertEqual(build_web.package_version('{"name": "x", "version": "1.2.3"}'), "1.2.3")
+        for bad in ['{"name": "x"}', '{"version": "1.2"}', '{"version": 1}', "not json", "[]"]:
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                build_web.package_version(bad)
+
+    def test_repository_package_json_has_a_valid_version(self):
+        build_web.package_version(build_web.read(build_web.PACKAGE_JSON))
 
     def test_display_version(self):
         self.assertEqual(build_web.display_version("0.1.0", CLEAN_TAGGED), "0.1.0")
