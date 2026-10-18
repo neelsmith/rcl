@@ -122,6 +122,17 @@ test("calendar and readings UI", { skip }, async (t) => {
       assert.match(await page.innerText("#texts"), /Choose one or more versions/);
       await page.check("#texts #ver-vulgate");
       assert.equal(await page.evaluate(() => document.activeElement.id), "ver-vulgate");
+      // Onkelos is offered for Exodus (Torah) but not for a psalm; the choice is kept.
+      await page.check("#texts #ver-onkelos");
+      assert.equal(await page.locator('#texts .vtext[data-version="onkelos"]').count(), 1);
+      await page.locator('button.cite:has-text("Psalm 99")').click();
+      assert.equal(await page.locator("#texts #ver-onkelos").count(), 0);
+      assert.equal(await page.locator('#texts .vtext[data-version="onkelos"]').count(), 0);
+      await page.check("#texts #ver-septuagint");
+      await page.uncheck("#texts #ver-septuagint");
+      await page.locator('button.cite:has-text("Exodus 33:12-23")').click();
+      assert.equal(await page.isChecked("#texts #ver-onkelos"), true);
+      await page.uncheck("#texts #ver-onkelos");
       const cal = await page.locator(".calendar").boundingBox();
       const rd = await page.locator("#readings").boundingBox();
       const tx = await page.locator("#texts").boundingBox();

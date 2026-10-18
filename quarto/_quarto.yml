@@ -1,0 +1,36 @@
+project:
+  type: website
+  output-dir: quarto_build
+
+execute:
+  freeze: auto
+date: last-modified  
+
+format:
+  html:
+    theme:
+      - minty
+      - brand
+    toc: true
+
+website:
+  title: "imageviewer"
+  navbar:
+    background: primary
+    search: true
+    left:
+      - text: "Home"
+        file: index.qmd
+      - text: "Cataloging images"
+        file: cataloging/index.qmd          
+     
+
+    right:
+      - icon: person-circle
+        menu:
+          - text: "imageviewer on github"
+            href: https://github.com/neelsmith/imageviewer        
+          - text: "Neel Smith: other hobby projects"
+            href: https://neelsmith.github.io/avocational/
+        aria-label: Home 
+

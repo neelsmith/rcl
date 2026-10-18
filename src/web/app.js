@@ -439,10 +439,17 @@
     return box;
   }
 
+  /** The chosen versions that are offered for this alternative. */
+  function shownVersions(alt) {
+    var offered = R.offeredVersions(otIndex, alt).map(function (v) { return v.id; });
+    return state.versions.filter(function (id) { return offered.indexOf(id) >= 0; });
+  }
+
   function textsPanel(alt) {
     var parsed = R.splitAlternative(alt);
     var wrap = h("div", { class: "texts" });
-    if (!state.versions.length) {
+    var versions = shownVersions(alt);
+    if (!versions.length) {
       wrap.appendChild(h("p", { class: "note", text: "Choose one or more versions to show the text." }));
       return wrap;
     }
@@ -453,7 +460,7 @@
           (sel.optional ? " (optional)" : "") }));
       }
       var grid = h("div", { class: "vgrid" });
-      R.textsFor(cex, otIndex, parsed.book, sel.ref, state.versions).forEach(function (res) {
+      R.textsFor(cex, otIndex, parsed.book, sel.ref, versions).forEach(function (res) {
         grid.appendChild(versionBlock(res, parsed.book));
       });
       group.appendChild(grid);
@@ -501,7 +508,7 @@
       h("button", { class: "btn icon-btn", type: "button", "aria-label": "Close text", text: "\u00d7",
         onclick: function () { closeTexts(); state.open = null; } })
     ]));
-    el.texts.appendChild(versionChooser());
+    el.texts.appendChild(versionChooser(alt));
     el.texts.appendChild(textsPanel(alt));
     el.texts.hidden = false;
     btn.setAttribute("aria-expanded", "true");
@@ -535,15 +542,18 @@
   }
   el.fold.addEventListener("click", function () { setFolded(!state.folded); });
 
-  function versionChooser() {
+  function versionChooser(alt) {
     var box = h("fieldset", { class: "versions" }, [h("legend", { text: "Old Testament texts" })]);
-    R.VERSIONS.forEach(function (v) {
+    var offered = R.offeredVersions(otIndex, alt);
+    offered.forEach(function (v) {
       var id = "ver-" + v.id;
       var input = h("input", { type: "checkbox", id: id, value: v.id });
       input.checked = state.versions.indexOf(v.id) >= 0;
       input.addEventListener("change", function () {
+        // Versions not offered here (Onkelos outside the Torah) keep their saved setting.
         state.versions = R.VERSIONS.map(function (d) { return d.id; }).filter(function (x) {
-          return document.getElementById("ver-" + x).checked;
+          var box = document.getElementById("ver-" + x);
+          return box ? box.checked : state.versions.indexOf(x) >= 0;
         });
         saveVersions(state.versions);
         // Re-render only the open text, keeping the chooser and focus in place.
