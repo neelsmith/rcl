@@ -414,6 +414,26 @@
     });
   }
 
+  /** Ids of the versions that have any text for an alternative (e.g. Onkelos only for the Torah). */
+  function availableVersions(index, alt) {
+    var parsed = splitAlternative(alt), found = {};
+    if (parsed) {
+      parsed.selections.forEach(function (s) {
+        (index[parsed.book + "|" + s.ref] || []).forEach(function (r) { found[r.version] = 1; });
+      });
+    }
+    return VERSIONS.map(function (v) { return v.id; }).filter(function (id) { return found[id]; });
+  }
+
+  /**
+   * Versions to offer for an alternative: all of them, except Onkelos, which
+   * (being a Targum of the Pentateuch) is offered only where it has the text.
+   */
+  function offeredVersions(index, alt) {
+    var avail = availableVersions(index, alt);
+    return VERSIONS.filter(function (v) { return v.id !== "onkelos" || avail.indexOf("onkelos") >= 0; });
+  }
+
   /** Human-readable explanation of an index note code. */
   function explainNote(code) {
     var m = /^psalm=(\d+)$/.exec(code);
@@ -429,6 +449,7 @@
     COLUMNS: COLUMNS, VERSIONS: VERSIONS,
     parseCex: parseCex, parseIndex: parseIndex, indexedBooks: indexedBooks,
     splitAlternative: splitAlternative, textsFor: textsFor, explainNote: explainNote,
+    availableVersions: availableVersions, offeredVersions: offeredVersions,
     dayNumber: dayNumber, fromDayNumber: fromDayNumber, dayOfWeek: dayOfWeek,
     isoDate: isoDate, parseIsoDate: parseIsoDate, sundayOnOrAfter: sundayOnOrAfter,
     easter: easter, advent1: advent1, yearLetter: yearLetter,

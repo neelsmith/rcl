@@ -237,3 +237,20 @@ test("every OT selection in the real data resolves", () => {
   const ps = R.textsFor(cex, idx, "Psalm", "23", ["septuagint"])[0];
   assert.match(ps.parts[0].passages[0].text, /Κύριος ποιμαίνει με/);
 });
+
+test("Onkelos is offered only where it has the text (the Torah)", () => {
+  const idx = R.parseIndex([
+    "book|selection|version|first_urn|last_urn|note",
+    "Genesis|1:1-1:5|masoretic|a|b|", "Genesis|1:1-1:5|onkelos|a|b|", "Genesis|1:1-1:5|septuagint|a|b|",
+    "Isaiah|2:1-2:5|masoretic|a|b|", "Isaiah|2:1-2:5|vulgate|a|b|",
+  ].join("\n"));
+  const ids = (alt) => R.offeredVersions(idx, alt).map((v) => v.id);
+  assert.deepEqual(ids("Genesis 1:1-1:5"), ["masoretic", "onkelos", "septuagint", "vulgate"]);
+  assert.deepEqual(ids("Isaiah 2:1-2:5"), ["masoretic", "septuagint", "vulgate"]);
+  assert.deepEqual(R.availableVersions(idx, "Isaiah 2:1-2:5"), ["masoretic", "vulgate"]);
+  // with the real data
+  const real = R.parseIndex(fs.readFileSync(path.join(DATA, "..", "ot_index.txt"), "utf8"));
+  assert.ok(R.offeredVersions(real, "Exodus 33:12-33:23").some((v) => v.id === "onkelos"));
+  assert.ok(!R.offeredVersions(real, "Psalm 99").some((v) => v.id === "onkelos"));
+  assert.ok(!R.offeredVersions(real, "Isaiah 45:1-45:7").some((v) => v.id === "onkelos"));
+});

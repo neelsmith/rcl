@@ -1,0 +1,5 @@
+---
+title: "`rcl`"
+---
+
+Data resources and a web app for reading the Revised Common Lectionary.

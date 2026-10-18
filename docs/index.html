@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lectionary Readings</title>
-<meta name="version" content="0.1.0+5768fd7-dirty">
+<meta name="version" content="0.2.0+9e7d37f-dirty">
 <meta name="description" content="Revised Common Lectionary readings (Episcopal use) for Sundays and Major Holy Days.">
 <style>
 :root {
@@ -49,6 +49,7 @@
   }
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--text);
@@ -61,14 +62,24 @@ header.site h1 {
   font-family: var(--serif); font-weight: 600; font-size: 1.75rem; margin: 0;
 }
 header.site p { margin: 2px 0 0; color: var(--muted); font-size: 0.95rem; }
-main {
-  max-width: 1120px; margin: 0 auto; padding: 8px 16px 32px;
-  display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px;
-}
+main { max-width: 1120px; margin: 0 auto; padding: 8px 16px 32px; }
+.top { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
 @media (min-width: 900px) {
-  main { grid-template-columns: minmax(0, 470px) minmax(0, 1fr); align-items: start; }
+  .top { grid-template-columns: minmax(0, 470px) minmax(0, 1fr); align-items: start; }
   .calendar { position: sticky; top: 16px; }
+  .top.folded { grid-template-columns: minmax(0, 1fr); }
+  .top.folded .calendar { position: static; }
 }
+/* Folded calendar: a slim bar with the date, Today, date picker and "Show calendar". */
+.top.folded #cal-body, .top.folded #prev, .top.folded #next { display: none; }
+.top.folded .calendar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 16px;
+}
+.top.folded .cal-head { margin: 0; flex: 1 1 auto; }
+.top.folded .jump { margin: 0; }
+.jump .fold { margin-left: auto; }
+.top.folded .jump .fold { margin-left: 0; }
+.top.folded #readings h2.date { display: none; } /* the date is already in the folded bar */
 .panel {
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
   padding: 16px;
@@ -177,8 +188,9 @@ table.lessons td { font-family: var(--serif); font-size: 1.05rem; }
 .src { font-size: 0.8rem; margin-top: 8px; }
 .src a { color: var(--muted); }
 /* ------------------------------------------------------------ OT texts */
+#readings > p.hint { font-size: 0.85rem; color: var(--muted); margin: 2px 0 6px; }
 fieldset.versions {
-  border: 1px solid var(--line); border-radius: 8px; margin: 10px 0 4px; padding: 6px 12px 8px;
+  border: 1px solid var(--line); border-radius: 8px; margin: 0 0 12px; padding: 6px 12px 8px;
   display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: center;
 }
 fieldset.versions legend { font-size: 0.8rem; color: var(--muted); padding: 0 4px; }
@@ -192,11 +204,15 @@ button.cite {
 button.cite:hover { color: var(--sunday); }
 button.cite[aria-expanded=true] { color: var(--sunday); text-decoration-style: solid; }
 button.cite:focus-visible { outline: 2px solid var(--today-ring); outline-offset: 2px; border-radius: 3px; }
-tr.texts-row > td { padding: 4px 0 12px; font-family: var(--sans); font-size: 1rem; }
-.texts { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.texts-panel { margin-top: 20px; scroll-margin-top: 12px; }
+.texts-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.texts-head > div { flex: 1; min-width: 0; }
+.texts-head h2 { font-family: var(--serif); font-weight: 600; font-size: 1.3rem; margin: 0; }
+.texts-head .meta { margin: 2px 0 0; }
+.texts-panel .vtext { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
 .texts h4 { margin: 4px 0 6px; font-size: 0.9rem; }
 .selection + .selection { margin-top: 12px; }
-.vgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.vgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
 .vtext h5 { margin: 0 0 4px; font-size: 0.8rem; color: var(--muted); font-weight: 600; letter-spacing: 0.02em; }
 .vbody p.verse { margin: 0 0 4px; font-family: var(--serif); font-size: 1.02rem; line-height: 1.55; }
 .vbody sup { color: var(--muted); font-family: var(--sans); font-size: 0.65rem; }
@@ -206,6 +222,45 @@ tr.texts-row > td { padding: 4px 0 12px; font-family: var(--sans); font-size: 1r
 .vbody[lang=he] p.verse, .vbody[lang=arc] p.verse { font-size: 1.25rem; line-height: 1.7; }
 .vbody[lang=grc] { font-family: "Gentium Plus", "GFS Didot", "Palatino Linotype", Georgia, serif; }
 .texts .note { margin-top: 4px; }
+/* ------------------------------------------------------------ audio */
+details.settings { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px; }
+details.settings summary { cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+.badge {
+  display: inline-block; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+  border-radius: 999px; padding: 0 7px; margin-left: 6px; border: 1px solid var(--line); color: var(--muted);
+}
+.badge.on { color: var(--sunday); border-color: var(--sunday); }
+.settings-help { font-size: 0.85rem; color: var(--muted); margin: 6px 0 8px; }
+.setting { margin: 10px 0; }
+.setting-label { font-size: 0.85rem; font-weight: 600; }
+.setting .status { font-size: 0.85rem; margin: 2px 0 6px; color: var(--muted); overflow-wrap: anywhere; }
+.setting .status.warn { color: var(--accent); }
+.setting-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+.setting-actions label { font-size: 0.8rem; color: var(--muted); flex-basis: 100%; }
+.setting-actions input[type=text] {
+  flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
+  padding: 5px 8px; min-height: 36px;
+}
+button.play {
+  font: inherit; font-size: 0.8rem; line-height: 1; color: var(--sunday); background: var(--sunday-soft);
+  border: 1px solid transparent; border-radius: 999px; width: 1.7em; height: 1.7em; margin-left: 6px;
+  cursor: pointer; vertical-align: 0.1em; padding: 0;
+}
+button.play:hover { border-color: var(--sunday); }
+button.play:focus-visible { outline: 2px solid var(--today-ring); outline-offset: 2px; }
+button.play.playing { background: var(--sunday); color: var(--surface); }
+.player {
+  position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 10;
+  width: min(760px, calc(100% - 24px)); display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18); padding: 10px 12px;
+}
+.player-info { flex: 1 1 220px; min-width: 0; }
+.player-title { font-family: var(--serif); font-weight: 600; }
+.player-meta { font-size: 0.8rem; color: var(--muted); overflow-wrap: anywhere; }
+.player-meta .warn { color: var(--accent); }
+.player audio { flex: 1 1 260px; min-width: 0; height: 40px; }
+body.has-player { padding-bottom: 110px; }
 footer a { color: var(--sunday); }
 footer .version { font-variant-numeric: tabular-nums; }
 footer {
@@ -223,6 +278,7 @@ footer {
   <p>Revised Common Lectionary for Sundays and Major Holy Days, as authorized for the Episcopal Church</p>
 </header>
 <main>
+<div class="top" id="top">
   <section class="calendar panel" aria-label="Calendar">
     <div class="cal-head">
       <button class="btn icon-btn" id="prev" type="button" aria-label="Previous month">&#8249;</button>
@@ -233,7 +289,9 @@ footer {
       <button class="btn" id="today" type="button">Today</button>
       <label class="sr-only" for="date-input" style="position:absolute;left:-9999px">Go to date</label>
       <input type="date" id="date-input" min="1900-01-01" max="2199-12-31">
+      <button class="btn fold" id="cal-fold" type="button" aria-controls="cal-body" aria-expanded="true">Hide calendar</button>
     </div>
+    <div id="cal-body">
     <div class="grid" id="grid" role="grid" aria-labelledby="month-title"></div>
     <div class="legend" aria-hidden="true">
       <span><i class="k-sunday"></i>Sunday</span>
@@ -241,12 +299,52 @@ footer {
       <span><i class="k-feast"></i>Major Feast</span>
       <span><i class="k-fast"></i>Other holy day</span>
     </div>
+    <details class="settings" id="audio-settings">
+      <summary>Psalm recordings <span class="badge" id="audio-badge">off</span></summary>
+      <p class="settings-help">Optional: play chanted psalms from your own recordings.
+        Choose the folder your recordings are in to turn this on.</p>
+      <div class="setting">
+        <div class="setting-label">Music folder</div>
+        <p class="status" id="audio-source-status">Not set.</p>
+        <div class="setting-actions">
+          <button class="btn" id="audio-folder-btn" type="button">Choose folder…</button>
+          <button class="btn" id="audio-reconnect-btn" type="button" hidden>Reconnect</button>
+          <button class="btn" id="audio-off-btn" type="button" hidden>Turn off</button>
+          <input type="file" id="audio-folder-input" webkitdirectory multiple hidden>
+        </div>
+        <form class="setting-actions" id="audio-base-form">
+          <label for="audio-base">or a folder path or web address</label>
+          <input type="text" id="audio-base" placeholder="/Users/me/Music or https://…" spellcheck="false" autocomplete="off">
+          <button class="btn" type="submit">Use</button>
+        </form>
+      </div>
+      <div class="setting">
+        <div class="setting-label">Psalm-to-recording mapping</div>
+        <p class="status" id="audio-map-status"></p>
+        <div class="setting-actions">
+          <button class="btn" id="audio-map-btn" type="button">Choose mapping file…</button>
+          <button class="btn" id="audio-map-reset" type="button" hidden>Use built-in</button>
+          <input type="file" id="audio-map-input" accept=".txt,.csv,.psv,text/plain" hidden>
+        </div>
+      </div>
+    </details>
+    </div>
   </section>
   <section class="readings panel" id="readings" aria-live="polite"></section>
+</div>
+  <section class="texts-panel panel" id="texts" aria-label="Old Testament text" hidden></section>
 </main>
+<div class="player" id="player" hidden>
+  <div class="player-info">
+    <div class="player-title" id="player-title"></div>
+    <div class="player-meta" id="player-meta"></div>
+  </div>
+  <audio id="player-audio" controls preload="metadata"></audio>
+  <button class="btn icon-btn" id="player-close" type="button" aria-label="Close player">&#215;</button>
+</div>
 <footer>
   Readings from <a href="https://www.lectionarypage.net/">lectionarypage.net</a>; Old Testament texts from <a href="https://github.com/neelsmith/compnov">compnov</a>.
-  <span class="version" id="app-version">v0.1.0+5768fd7-dirty</span> &middot; 293 entries, built 2026-10-16.
+  <span class="version" id="app-version">v0.2.0+9e7d37f-dirty</span> &middot; 293 entries, built 2026-10-18.
 </footer>
 <script type="text/plain" id="rcl-data">
 id|label|year|season|track|fixed_date|first_reading|psalm|second_reading|gospel|notes|source_url
@@ -2399,6 +2497,259 @@ Deuteronomy|32:1-32:4|vulgate|urn:cts:compnov:bible.deuteronomy.vulgate:32.1|urn
 Psalm|119:89-119:96|masoretic|urn:cts:compnov:bible.psalms.masoretic:119.89|urn:cts:compnov:bible.psalms.masoretic:119.96|titles
 Psalm|119:89-119:96|septuagint|urn:cts:compnov:bible.psalms.septuagint:118.89|urn:cts:compnov:bible.psalms.septuagint:118.96|psalm=118 titles
 Psalm|119:89-119:96|vulgate|urn:cts:compnov:bible.psalms.vulgate:118.89|urn:cts:compnov:bible.psalms.vulgate:118.96|psalm=118 titles
+</script>
+<script type="text/plain" id="audio-map">
+selection|psalm|file|coverage
+1|1|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/01 Psalm 1.m4a|whole
+2|2|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/02 Psalm 2.m4a|whole
+2:7-2:10|2|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/02 Psalm 2.m4a|excerpt
+4|4|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/04 Psalm 4.m4a|whole
+5:1-5:8|5|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/05 Psalm 5.m4a|excerpt
+7:1-7:10|7|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/07 Psalm 7.m4a|excerpt
+8|8|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/08 Psalm 8.m4a|whole
+9:9-9:20|9|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/09 Psalm 9.m4a|excerpt
+13|13|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/13 Psalm 13.m4a|whole
+14|14|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/14 Psalm 14.m4a|whole
+15|15|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/15 Psalm 15.m4a|whole
+16|16|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/16 Psalm 16.m4a|whole
+17:1-17:7|17|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/17 Psalm 17.m4a|excerpt
+17:1-17:9|17|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/17 Psalm 17.m4a|excerpt
+17:16|17|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/17 Psalm 17.m4a|excerpt
+19|19|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/19 Psalm 19.m4a|whole
+19:1-19:6|19|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/19 Psalm 19.m4a|excerpt
+19:7-19:14|19|The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/19 Psalm 19.m4a|excerpt
+20|20|Compilations/The Complete Psalms of David Volume 2/01 Psalm 20.m4a|whole
+22|22|Compilations/The Complete Psalms of David Volume 2/03 Psalm 22.m4a|whole
+22:1-22:15|22|Compilations/The Complete Psalms of David Volume 2/03 Psalm 22.m4a|excerpt
+22:18-22:27|22|Compilations/The Complete Psalms of David Volume 2/03 Psalm 22.m4a|excerpt
+22:22-22:30|22|Compilations/The Complete Psalms of David Volume 2/03 Psalm 22.m4a|excerpt
+22:24-22:30|22|Compilations/The Complete Psalms of David Volume 2/03 Psalm 22.m4a|excerpt
+23|23|Compilations/The Complete Psalms of David Volume 2/04 Psalm 23.m4a|whole
+24|24|Compilations/The Complete Psalms of David Volume 2/05 Psalm 24.m4a|whole
+24:7-24:10|24|Compilations/The Complete Psalms of David Volume 2/05 Psalm 24.m4a|excerpt
+25:1-25:8|25|Compilations/The Complete Psalms of David Volume 2/06 Psalm 25.m4a|excerpt
+25:1-25:9|25|Compilations/The Complete Psalms of David Volume 2/06 Psalm 25.m4a|excerpt
+26|26|Compilations/The Complete Psalms of David Volume 2/07 Psalm 26.m4a|whole
+26:1-26:8|26|Compilations/The Complete Psalms of David Volume 2/07 Psalm 26.m4a|excerpt
+27|27|Compilations/The Complete Psalms of David Volume 2/08 Psalm 27.m4a|whole
+27:1|27|Compilations/The Complete Psalms of David Volume 2/08 Psalm 27.m4a|excerpt
+27:5-27:13|27|Compilations/The Complete Psalms of David Volume 2/08 Psalm 27.m4a|excerpt
+29|29|Compilations/The Complete Psalms of David Volume 2/10 Psalm 29.m4a|whole
+30|30|Compilations/The Complete Psalms of David Volume 2/11 Psalm 30.m4a|whole
+31|31|Compilations/The Complete Psalms of David Volume 2/12 Psalm 31.m4a|whole
+31:1-31:4|31|Compilations/The Complete Psalms of David Volume 2/12 Psalm 31.m4a|excerpt
+31:1-31:5|31|Compilations/The Complete Psalms of David Volume 2/12 Psalm 31.m4a|excerpt
+31:9-31:16|31|Compilations/The Complete Psalms of David Volume 2/12 Psalm 31.m4a|excerpt
+31:15-31:16|31|Compilations/The Complete Psalms of David Volume 2/12 Psalm 31.m4a|excerpt
+31:19-31:24|31|Compilations/The Complete Psalms of David Volume 2/12 Psalm 31.m4a|excerpt
+32|32|Compilations/The Complete Psalms of David Volume 2/13 Psalm 32.m4a|whole
+32:1-32:8|32|Compilations/The Complete Psalms of David Volume 2/13 Psalm 32.m4a|excerpt
+33:1-33:12|33|Compilations/The Complete Psalms of David Volume 2/14 Psalm 33.m4a|excerpt
+33:12-33:22|33|Compilations/The Complete Psalms of David Volume 2/14 Psalm 33.m4a|excerpt
+34|34|Compilations/The Complete Psalms of David Volume 2/15 Psalm 34.m4a|whole
+34:1-34:10|34|Compilations/The Complete Psalms of David Volume 2/15 Psalm 34.m4a|excerpt
+34:1-34:8|34|Compilations/The Complete Psalms of David Volume 2/15 Psalm 34.m4a|excerpt
+34:1-34:9|34|Compilations/The Complete Psalms of David Volume 2/15 Psalm 34.m4a|excerpt
+34:9-34:14|34|Compilations/The Complete Psalms of David Volume 2/15 Psalm 34.m4a|excerpt
+34:15-34:22|34|Compilations/The Complete Psalms of David Volume 2/15 Psalm 34.m4a|excerpt
+34:19-34:22|34|Compilations/The Complete Psalms of David Volume 2/15 Psalm 34.m4a|excerpt
+34:22|34|Compilations/The Complete Psalms of David Volume 2/15 Psalm 34.m4a|excerpt
+36:5-36:10|36|Compilations/The Complete Psalms of David Volume 2/17 Psalm 36.m4a|excerpt
+36:5-36:11|36|Compilations/The Complete Psalms of David Volume 2/17 Psalm 36.m4a|excerpt
+37:1-37:10|37|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/01 Psalm 37.m4a|excerpt
+37:1-37:12|37|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/01 Psalm 37.m4a|excerpt
+37:41-37:42|37|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/01 Psalm 37.m4a|excerpt
+40:1-40:12|40|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/04 Psalm 40.m4a|excerpt
+40:5-40:10|40|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/04 Psalm 40.m4a|excerpt
+41|41|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/05 Psalm 41.m4a|whole
+42|42|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/06 Psalm 42.m4a|whole
+42:1-42:7|42|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/06 Psalm 42.m4a|excerpt
+43|43|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/07 Psalm 43.m4a|whole
+45|45|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/09 Psalm 45.m4a|whole
+45:1-45:2|45|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/09 Psalm 45.m4a|excerpt
+45:7-45:10|45|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/09 Psalm 45.m4a|excerpt
+45:11-45:18|45|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/09 Psalm 45.m4a|excerpt
+46|46|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/10 Psalm 46.m4a|whole
+47|47|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/11 Psalm 47.m4a|whole
+48|48|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/12 Psalm 48.m4a|whole
+49:1-49:11|49|Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/13 Psalm 49.m4a|excerpt
+50:1-50:6|50|Compilations/The Complete Psalms of David, Vol. 4/01 Psalm 50.m4a|excerpt
+50:1-50:8|50|Compilations/The Complete Psalms of David, Vol. 4/01 Psalm 50.m4a|excerpt
+50:7-50:15|50|Compilations/The Complete Psalms of David, Vol. 4/01 Psalm 50.m4a|excerpt
+50:23-50:24|50|Compilations/The Complete Psalms of David, Vol. 4/01 Psalm 50.m4a|excerpt
+51:1-51:11|51|Compilations/The Complete Psalms of David, Vol. 4/02 Psalm 51.m4a|excerpt
+51:1-51:13|51|Compilations/The Complete Psalms of David, Vol. 4/02 Psalm 51.m4a|excerpt
+52|52|Compilations/The Complete Psalms of David, Vol. 4/03 Psalm 52.m4a|whole
+54|54|Compilations/The Complete Psalms of David, Vol. 4/05 Psalm 54.m4a|whole
+62:6-62:14|62|Compilations/The Complete Psalms of David, Vol. 4/13 Psalm 62.m4a|excerpt
+63:1-63:8|63|Compilations/The Complete Psalms of David, Vol. 4/14 Psalm 63.m4a|excerpt
+65|65|Compilations/The Complete Psalms of David, Vol. 4/16 Psalm 65.m4a|whole
+65:1-65:8|65|Compilations/The Complete Psalms of David, Vol. 4/16 Psalm 65.m4a|excerpt
+65:9-65:14|65|Compilations/The Complete Psalms of David, Vol. 4/16 Psalm 65.m4a|excerpt
+66:1-66:11|66|Compilations/The Complete Psalms of David, Vol. 4/17 Psalm 66.m4a|excerpt
+66:1-66:8|66|Compilations/The Complete Psalms of David, Vol. 4/17 Psalm 66.m4a|excerpt
+66:7-66:18|66|Compilations/The Complete Psalms of David, Vol. 4/17 Psalm 66.m4a|excerpt
+67|67|Compilations/The Complete Psalms of David, Vol. 4/18 Psalm 67.m4a|whole
+68:1-68:10|68|Compilations/The Complete Psalms of David, Vol. 5/01 Psalm 68.m4a|excerpt
+68:33-68:36|68|Compilations/The Complete Psalms of David, Vol. 5/01 Psalm 68.m4a|excerpt
+69:8-69:11|69|Compilations/The Complete Psalms of David, Vol. 5/02 Psalm 69.m4a|excerpt
+69:12-69:17|69|Compilations/The Complete Psalms of David, Vol. 5/02 Psalm 69.m4a|excerpt
+69:18-69:20|69|Compilations/The Complete Psalms of David, Vol. 5/02 Psalm 69.m4a|excerpt
+70|70|Compilations/The Complete Psalms of David, Vol. 5/03 Psalm 70.m4a|whole
+71:1-71:14|71|Compilations/The Complete Psalms of David, Vol. 5/04 Psalm 71.m4a|excerpt
+71:1-71:6|71|Compilations/The Complete Psalms of David, Vol. 5/04 Psalm 71.m4a|excerpt
+72:1-72:7|72|Compilations/The Complete Psalms of David, Vol. 5/05 Psalm 72.m4a|excerpt
+72:10-72:14|72|Compilations/The Complete Psalms of David, Vol. 5/05 Psalm 72.m4a|excerpt
+72:18-72:19|72|Compilations/The Complete Psalms of David, Vol. 5/05 Psalm 72.m4a|excerpt
+77:1-77:2|77|Compilations/The Complete Psalms of David, Vol. 5/10 Psalm 77.m4a|excerpt
+77:11-77:20|77|Compilations/The Complete Psalms of David, Vol. 5/10 Psalm 77.m4a|excerpt
+78:1-78:4|78|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/01 Psalm 78.m4a|excerpt
+78:1-78:7|78|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/01 Psalm 78.m4a|excerpt
+78:12-78:16|78|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/01 Psalm 78.m4a|excerpt
+78:23-78:29|78|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/01 Psalm 78.m4a|excerpt
+79:1-79:9|79|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/02 Psalm 79.m4a|excerpt
+80:1-80:2|80|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/03 Psalm 80.m4a|excerpt
+80:1-80:7|80|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/03 Psalm 80.m4a|excerpt
+80:7-80:14|80|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/03 Psalm 80.m4a|excerpt
+80:8-80:18|80|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/03 Psalm 80.m4a|excerpt
+80:16-80:18|80|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/03 Psalm 80.m4a|excerpt
+81:1|81|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/04 Psalm 81.m4a|excerpt
+81:1-81:10|81|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/04 Psalm 81.m4a|excerpt
+81:10-81:16|81|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/04 Psalm 81.m4a|excerpt
+82|82|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/05 Psalm 82.m4a|whole
+84|84|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/07 Psalm 84.m4a|whole
+84:1-84:6|84|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/07 Psalm 84.m4a|excerpt
+84:1-84:8|84|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/07 Psalm 84.m4a|excerpt
+85|85|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/08 Psalm 85.m4a|whole
+85:1-85:2|85|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/08 Psalm 85.m4a|excerpt
+85:7-85:13|85|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/08 Psalm 85.m4a|excerpt
+85:8-85:13|85|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/08 Psalm 85.m4a|excerpt
+86:1-86:10|86|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/09 Psalm 86.m4a|excerpt
+86:11-86:17|86|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/09 Psalm 86.m4a|excerpt
+86:16-86:17|86|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/09 Psalm 86.m4a|excerpt
+87|87|Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/10 Psalm 87.m4a|whole
+89:1-89:29|89|Compilations/The Complete Psalms of David, Series 2, Volume 7/01 Psalm 89.m4a|excerpt
+89:1-89:4|89|Compilations/The Complete Psalms of David, Series 2, Volume 7/01 Psalm 89.m4a|excerpt
+89:15-89:18|89|Compilations/The Complete Psalms of David, Series 2, Volume 7/01 Psalm 89.m4a|excerpt
+89:19-89:26|89|Compilations/The Complete Psalms of David, Series 2, Volume 7/01 Psalm 89.m4a|excerpt
+89:20-89:37|89|Compilations/The Complete Psalms of David, Series 2, Volume 7/01 Psalm 89.m4a|excerpt
+89:26-89:29|89|Compilations/The Complete Psalms of David, Series 2, Volume 7/01 Psalm 89.m4a|excerpt
+90:1-90:6|90|Compilations/The Complete Psalms of David, Series 2, Volume 7/02 Psalm 90.m4a|excerpt
+90:1-90:8|90|Compilations/The Complete Psalms of David, Series 2, Volume 7/02 Psalm 90.m4a|excerpt
+90:9-90:11|90|Compilations/The Complete Psalms of David, Series 2, Volume 7/02 Psalm 90.m4a|excerpt
+90:12|90|Compilations/The Complete Psalms of David, Series 2, Volume 7/02 Psalm 90.m4a|excerpt
+90:12-90:17|90|Compilations/The Complete Psalms of David, Series 2, Volume 7/02 Psalm 90.m4a|excerpt
+90:13-90:17|90|Compilations/The Complete Psalms of David, Series 2, Volume 7/02 Psalm 90.m4a|excerpt
+91|91|Compilations/The Complete Psalms of David, Series 2, Volume 7/03 Psalm 91.m4a|whole
+91:1-91:2|91|Compilations/The Complete Psalms of David, Series 2, Volume 7/03 Psalm 91.m4a|excerpt
+91:1-91:4|91|Compilations/The Complete Psalms of David, Series 2, Volume 7/03 Psalm 91.m4a|excerpt
+91:1-91:6|91|Compilations/The Complete Psalms of David, Series 2, Volume 7/03 Psalm 91.m4a|excerpt
+91:9-91:16|91|Compilations/The Complete Psalms of David, Series 2, Volume 7/03 Psalm 91.m4a|excerpt
+91:14-91:16|91|Compilations/The Complete Psalms of David, Series 2, Volume 7/03 Psalm 91.m4a|excerpt
+92|92|Compilations/The Complete Psalms of David, Series 2, Volume 7/04 Psalm 92.m4a|whole
+92:1-92:4|92|Compilations/The Complete Psalms of David, Series 2, Volume 7/04 Psalm 92.m4a|excerpt
+92:11-92:14|92|Compilations/The Complete Psalms of David, Series 2, Volume 7/04 Psalm 92.m4a|excerpt
+93|93|Compilations/The Complete Psalms of David, Series 2, Volume 7/05 Psalm 93.m4a|whole
+95|95|Compilations/The Complete Psalms of David, Series 2, Volume 7/07 Psalm 95.m4a|whole
+95:1-95:7a|95|Compilations/The Complete Psalms of David, Series 2, Volume 7/07 Psalm 95.m4a|excerpt
+96|96|Compilations/The Complete Psalms of David, Series 2, Volume 7/08 Psalm 96.m4a|whole
+96:1-96:9|96|Compilations/The Complete Psalms of David, Series 2, Volume 7/08 Psalm 96.m4a|excerpt
+96:10-96:13|96|Compilations/The Complete Psalms of David, Series 2, Volume 7/08 Psalm 96.m4a|excerpt
+97|97|Compilations/The Complete Psalms of David, Series 2, Volume 7/09 Psalm 97.m4a|whole
+98|98|Compilations/The Complete Psalms of David, Series 2, Volume 7/10 Psalm 98.m4a|whole
+98:1-98:4|98|Compilations/The Complete Psalms of David, Series 2, Volume 7/10 Psalm 98.m4a|excerpt
+99|99|Compilations/The Complete Psalms of David, Series 2, Volume 7/11 Psalm 99.m4a|whole
+99:5-99:9|99|Compilations/The Complete Psalms of David, Series 2, Volume 7/11 Psalm 99.m4a|excerpt
+100|100|Compilations/The Complete Psalms of David, Series 2, Volume 7/12 Psalm 100.m4a|whole
+103|103|Compilations/The Complete Psalms of David, Series 2, Volume 7/15 Psalm 103.m4a|whole
+103:1-103:13|103|Compilations/The Complete Psalms of David, Series 2, Volume 7/15 Psalm 103.m4a|excerpt
+103:1-103:7|103|Compilations/The Complete Psalms of David, Series 2, Volume 7/15 Psalm 103.m4a|excerpt
+103:1-103:8|103|Compilations/The Complete Psalms of David, Series 2, Volume 7/15 Psalm 103.m4a|excerpt
+103:8-103:13|103|Compilations/The Complete Psalms of David, Series 2, Volume 7/15 Psalm 103.m4a|excerpt
+103:8-103:14|103|Compilations/The Complete Psalms of David, Series 2, Volume 7/15 Psalm 103.m4a|excerpt
+103:19-103:22|103|Compilations/The Complete Psalms of David, Series 2, Volume 7/15 Psalm 103.m4a|excerpt
+103:22|103|Compilations/The Complete Psalms of David, Series 2, Volume 7/15 Psalm 103.m4a|excerpt
+104:1-104:9|104|Compilations/The Complete Psalms of David, Series 2, Volume 7/16 Psalm 104.m4a|excerpt
+104:25|104|Compilations/The Complete Psalms of David, Series 2, Volume 7/16 Psalm 104.m4a|excerpt
+104:25-104:35|104|Compilations/The Complete Psalms of David, Series 2, Volume 7/16 Psalm 104.m4a|excerpt
+104:37|104|Compilations/The Complete Psalms of David, Series 2, Volume 7/16 Psalm 104.m4a|excerpt
+104:37b|104|Compilations/The Complete Psalms of David, Series 2, Volume 7/16 Psalm 104.m4a|excerpt
+105:1-105:11|105|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/01 Psalm 105 (Attwood, Deffell, Saunders, Moorse).m4a|excerpt
+105:1-105:6|105|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/01 Psalm 105 (Attwood, Deffell, Saunders, Moorse).m4a|excerpt
+105:16-105:22|105|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/01 Psalm 105 (Attwood, Deffell, Saunders, Moorse).m4a|excerpt
+105:23-105:26|105|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/01 Psalm 105 (Attwood, Deffell, Saunders, Moorse).m4a|excerpt
+105:37-105:45|105|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/01 Psalm 105 (Attwood, Deffell, Saunders, Moorse).m4a|excerpt
+105:45b|105|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/01 Psalm 105 (Attwood, Deffell, Saunders, Moorse).m4a|excerpt
+105:45c|105|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/01 Psalm 105 (Attwood, Deffell, Saunders, Moorse).m4a|excerpt
+106:1-106:6|106|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/02 Psalm 106 (H. Howells).m4a|excerpt
+106:19-106:23|106|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/02 Psalm 106 (H. Howells).m4a|excerpt
+107:1-107:3|107|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/03 Psalm 107 (R.J. Ashfield).m4a|excerpt
+107:1-107:7|107|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/03 Psalm 107 (R.J. Ashfield).m4a|excerpt
+107:1-107:9|107|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/03 Psalm 107 (R.J. Ashfield).m4a|excerpt
+107:17-107:22|107|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/03 Psalm 107 (R.J. Ashfield).m4a|excerpt
+107:23-107:32|107|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/03 Psalm 107 (R.J. Ashfield).m4a|excerpt
+107:33-107:37|107|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/03 Psalm 107 (R.J. Ashfield).m4a|excerpt
+107:43|107|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/03 Psalm 107 (R.J. Ashfield).m4a|excerpt
+111|111|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/07 Psalm 111 (J. Turle).m4a|whole
+112|112|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/08 Psalm 112 (W. Hayes).m4a|whole
+112:1-112:9|112|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/08 Psalm 112 (W. Hayes).m4a|excerpt
+112:10|112|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/08 Psalm 112 (W. Hayes).m4a|excerpt
+113|113|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/09 Psalm 113 (Grindle; Nardone).m4a|whole
+114|114|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/10 Psalm 114 (C.W. Eden).m4a|whole
+116:1|116|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/12 Psalm 116 (Macpherson).m4a|excerpt
+116:1-116:3|116|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/12 Psalm 116 (Macpherson).m4a|excerpt
+116:1-116:8|116|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/12 Psalm 116 (Macpherson).m4a|excerpt
+116:10-116:17|116|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/12 Psalm 116 (Macpherson).m4a|excerpt
+118:1-118:2|118|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/14 Psalm 118 (J. Nares; H.C. Stewart).m4a|excerpt
+118:14-118:24|118|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/14 Psalm 118 (J. Nares; H.C. Stewart).m4a|excerpt
+118:14-118:29|118|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/14 Psalm 118 (J. Nares; H.C. Stewart).m4a|excerpt
+118:19-118:29|118|Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/14 Psalm 118 (J. Nares; H.C. Stewart).m4a|excerpt
+119:1-119:8|119|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-01 Psalm 119, 1-32.m4a|excerpt
+119:9-119:16|119|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-01 Psalm 119, 1-32.m4a|excerpt
+119:33-119:40|119|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-02 Psalm 119, 33-72.m4a|excerpt
+119:89-119:96|119|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-03 Psalm 119, 73-104.m4a|excerpt
+119:97-119:104|119|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-03 Psalm 119, 73-104.m4a|excerpt
+119:105-119:112|119|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-04 Psalm 119, 105-144.m4a|excerpt
+119:129-119:136|119|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-04 Psalm 119, 105-144.m4a|excerpt
+119:137-119:144|119|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-04 Psalm 119, 105-144.m4a|excerpt
+121|121|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-07 Psalm 121.m4a|whole
+122|122|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-08 Psalm 122.m4a|whole
+123|123|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-09 Psalm 123.m4a|whole
+124|124|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-10 Psalm 124.m4a|whole
+125|125|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-11 Psalm 125.m4a|whole
+126|126|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-12 Psalm 126.m4a|whole
+127|127|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-13 Psalm 127.m4a|whole
+128|128|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-14 Psalm 128.m4a|whole
+130|130|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-16 Psalm 130.m4a|whole
+131|131|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-17 Psalm 131.m4a|whole
+132:1-132:13|132|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-18 Psalm 132.m4a|excerpt
+132:14-132:19|132|Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-18 Psalm 132.m4a|excerpt
+133|133|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-01 Psalm 133 (Turle).m4a|whole
+137|137|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-05 Psalm 137 (Alcock).m4a|whole
+138|138|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-06 Psalm 138 (Finzi).m4a|whole
+139:1-139:11|139|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-07 Psalm 139 (Rose, Gladstone).m4a|excerpt
+139:1-139:5|139|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-07 Psalm 139 (Rose, Gladstone).m4a|excerpt
+139:12-139:17|139|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-07 Psalm 139 (Rose, Gladstone).m4a|excerpt
+139:22-139:23|139|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-07 Psalm 139 (Rose, Gladstone).m4a|excerpt
+145|145|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-13 Psalm 145 (Hylton Stewart).m4a|whole
+145:1-145:5|145|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-13 Psalm 145 (Hylton Stewart).m4a|excerpt
+145:1-145:8|145|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-13 Psalm 145 (Hylton Stewart).m4a|excerpt
+145:1-145:9|145|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-13 Psalm 145 (Hylton Stewart).m4a|excerpt
+145:8-145:15|145|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-13 Psalm 145 (Hylton Stewart).m4a|excerpt
+145:8-145:9|145|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-13 Psalm 145 (Hylton Stewart).m4a|excerpt
+145:10-145:19|145|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-13 Psalm 145 (Hylton Stewart).m4a|excerpt
+145:15-145:22|145|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-13 Psalm 145 (Hylton Stewart).m4a|excerpt
+145:18-145:22|145|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-13 Psalm 145 (Hylton Stewart).m4a|excerpt
+146|146|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-14 Psalm 146 (Mellors).m4a|whole
+146:4-146:9|146|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-14 Psalm 146 (Mellors).m4a|excerpt
+147|147|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-15 Psalm 147 (Whitlock).m4a|whole
+147:1-147:12|147|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-15 Psalm 147 (Whitlock).m4a|excerpt
+147:1-147:7|147|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-15 Psalm 147 (Whitlock).m4a|excerpt
+147:13-147:21|147|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-15 Psalm 147 (Whitlock).m4a|excerpt
+147:21c|147|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-15 Psalm 147 (Whitlock).m4a|excerpt
+148|148|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-16 Psalm 148 (Harrison).m4a|whole
+149|149|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-17 Psalm 149 (Whitlock).m4a|whole
+150|150|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-18 Psalm 150 (Ravalde).m4a|whole
 </script>
 <script type="text/plain" id="ot-texts">
 #!ctsdata
@@ -13388,6 +13739,26 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
     });
   }
 
+  /** Ids of the versions that have any text for an alternative (e.g. Onkelos only for the Torah). */
+  function availableVersions(index, alt) {
+    var parsed = splitAlternative(alt), found = {};
+    if (parsed) {
+      parsed.selections.forEach(function (s) {
+        (index[parsed.book + "|" + s.ref] || []).forEach(function (r) { found[r.version] = 1; });
+      });
+    }
+    return VERSIONS.map(function (v) { return v.id; }).filter(function (id) { return found[id]; });
+  }
+
+  /**
+   * Versions to offer for an alternative: all of them, except Onkelos, which
+   * (being a Targum of the Pentateuch) is offered only where it has the text.
+   */
+  function offeredVersions(index, alt) {
+    var avail = availableVersions(index, alt);
+    return VERSIONS.filter(function (v) { return v.id !== "onkelos" || avail.indexOf("onkelos") >= 0; });
+  }
+
   /** Human-readable explanation of an index note code. */
   function explainNote(code) {
     var m = /^psalm=(\d+)$/.exec(code);
@@ -13403,6 +13774,7 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
     COLUMNS: COLUMNS, VERSIONS: VERSIONS,
     parseCex: parseCex, parseIndex: parseIndex, indexedBooks: indexedBooks,
     splitAlternative: splitAlternative, textsFor: textsFor, explainNote: explainNote,
+    availableVersions: availableVersions, offeredVersions: offeredVersions,
     dayNumber: dayNumber, fromDayNumber: fromDayNumber, dayOfWeek: dayOfWeek,
     isoDate: isoDate, parseIsoDate: parseIsoDate, sundayOnOrAfter: sundayOnOrAfter,
     easter: easter, advent1: advent1, yearLetter: yearLetter,
@@ -13410,6 +13782,145 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
     calendarYear: calendarYear, observancesOn: observancesOn, nextObservance: nextObservance,
     shortLabel: shortLabel, fullLabel: fullLabel,
     compactCitation: compactCitation, compactText: compactText
+  };
+});
+
+</script>
+<script>
+/*
+ * Psalm recordings: pure helpers (no DOM), shared by the browser (`RCLAudio`)
+ * and Node tests.
+ *
+ * A mapping file is pipe-delimited with a header that includes `selection`
+ * and `file` (and optionally `psalm`, `coverage`), as in
+ * data/psalm_audio_map.txt:
+ *
+ *   selection|psalm|file|coverage
+ *   103:1-103:13|103|Compilations/.../15 Psalm 103.m4a|excerpt
+ *
+ * `selection` is a psalm selection in canonical form without the book name;
+ * `file` is relative to the user's music folder.
+ */
+(function (root, factory) {
+  "use strict";
+  var api = factory();
+  if (typeof module === "object" && module.exports) module.exports = api;
+  else root.RCLAudio = api;
+})(typeof self !== "undefined" ? self : this, function () {
+  "use strict";
+
+  /**
+   * Parse a mapping file. Returns {map: {selection: [{file, coverage}]}, count, errors}.
+   * A file with errors in its header returns an empty map.
+   */
+  function parseMap(text) {
+    var lines = (text || "").split(/\r?\n/).filter(function (l) { return l.trim(); });
+    var out = { map: {}, count: 0, errors: [] };
+    if (!lines.length) { out.errors.push("The mapping file is empty."); return out; }
+    var header = lines[0].split("|").map(function (h) { return h.trim(); });
+    var iSel = header.indexOf("selection"), iFile = header.indexOf("file"), iCov = header.indexOf("coverage");
+    if (iSel < 0 || iFile < 0) {
+      out.errors.push("The first line must name the columns, including \u201cselection\u201d and \u201cfile\u201d.");
+      return out;
+    }
+    lines.slice(1).forEach(function (line, i) {
+      var f = line.split("|");
+      var sel = (f[iSel] || "").trim(), file = (f[iFile] || "").trim();
+      if (!/^\d+(:\d+[a-z]?(-\d+:\d+[a-z]?)?)?$/.test(sel) || !file) {
+        out.errors.push("Line " + (i + 2) + " is not a psalm selection and file.");
+        return;
+      }
+      (out.map[sel] = out.map[sel] || []).push({ file: file, coverage: iCov >= 0 ? (f[iCov] || "").trim() : "" });
+      out.count++;
+    });
+    return out;
+  }
+
+  /**
+   * Recordings for one alternative of a psalm citation, in order, without
+   * repeating a file: [{file, coverage, selections: [...]}]. `alt` is canonical,
+   * e.g. "Psalm 103:1-103:13, 103:22"; anything but a psalm returns [].
+   * `split` is RCL.splitAlternative.
+   */
+  function recordingsFor(map, alt, split) {
+    var parsed = split(alt);
+    if (!parsed || parsed.book !== "Psalm") return [];
+    var out = [], byFile = {};
+    parsed.selections.forEach(function (s) {
+      (map[s.ref] || []).forEach(function (r) {
+        if (byFile[r.file]) {
+          byFile[r.file].selections.push(s.ref);
+          if (r.coverage !== "whole") byFile[r.file].coverage = "excerpt";
+          return;
+        }
+        var rec = { file: r.file, coverage: r.coverage, selections: [s.ref] };
+        byFile[r.file] = rec;
+        out.push(rec);
+      });
+    });
+    // Several selections from one recording are always an excerpt of it.
+    out.forEach(function (r) { if (r.selections.length > 1) r.coverage = "excerpt"; });
+    return out;
+  }
+
+  /** Join a base URL and a relative path, escaping each path segment. */
+  function joinUrl(base, path) {
+    var b = (base || "").replace(/\/+$/, "");
+    return b + "/" + path.split("/").map(encodeURIComponent).join("/");
+  }
+
+  /** Accept "file:///…", "http(s)://…" or an absolute path ("/Users/…", "C:\…"). */
+  function normalizeBase(input) {
+    var s = (input || "").trim();
+    if (!s) return "";
+    if (/^(https?|file):\/\//i.test(s)) return s;
+    if (/^[A-Za-z]:[\\/]/.test(s)) return "file:///" + s.replace(/\\/g, "/");
+    if (s.charAt(0) === "/") return "file://" + s;
+    return null;
+  }
+
+  /**
+   * Index files picked with <input webkitdirectory>: {relativePath: file}.
+   * Paths are made relative to the chosen folder (its own name is dropped).
+   */
+  function indexPicked(files) {
+    var index = {};
+    Array.prototype.forEach.call(files, function (f) {
+      var rel = (f.webkitRelativePath || f.name).split("/").slice(1).join("/");
+      if (rel) index[rel] = f;
+    });
+    return index;
+  }
+
+  /**
+   * Find a mapped path in an index of picked files. Exact match first, then a
+   * match where one path ends with the other (the user chose a folder one level
+   * above or below the one the mapping is relative to).
+   */
+  function findPicked(index, path) {
+    if (index[path]) return index[path];
+    var keys = Object.keys(index);
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i];
+      if (k.length > path.length ? k.slice(-path.length - 1) === "/" + path
+        : path.slice(-k.length - 1) === "/" + k) return index[k];
+    }
+    return null;
+  }
+
+  /** Short description of a recording from its path: {title, album}. */
+  function describe(path) {
+    var parts = path.split("/");
+    var name = parts[parts.length - 1].replace(/\.[^.]+$/, "").replace(/^[\d-]+\s+/, "");
+    var album = parts.length > 1 ? parts[parts.length - 2] : "";
+    var artist = parts.length > 2 ? parts[parts.length - 3] : "";
+    if (artist === "Compilations") artist = "";
+    return { title: name, album: album, artist: artist.replace(/_/g, ",").replace(/\s+,/g, ",") };
+  }
+
+  return {
+    parseMap: parseMap, recordingsFor: recordingsFor, joinUrl: joinUrl,
+    normalizeBase: normalizeBase, indexPicked: indexPicked, findPicked: findPicked, describe: describe
   };
 });
 
@@ -13441,7 +13952,10 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
     grid: document.getElementById("grid"), title: document.getElementById("month-title"),
     prev: document.getElementById("prev"), next: document.getElementById("next"),
     today: document.getElementById("today"), input: document.getElementById("date-input"),
-    readings: document.getElementById("readings")
+    readings: document.getElementById("readings"),
+    texts: document.getElementById("texts"),
+    top: document.getElementById("top"),
+    fold: document.getElementById("cal-fold")
   };
 
   function todayDn() {
@@ -13496,7 +14010,7 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
   // ------------------------------------------------------------ calendar
   function renderCalendar() {
     var y = state.viewY, m = state.viewM;
-    el.title.textContent = MONTHS[m - 1] + " " + y;
+    el.title.textContent = state.folded ? longDate(state.selected) : MONTHS[m - 1] + " " + y;
     el.grid.textContent = "";
     ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(function (d, i) {
       el.grid.appendChild(h("div", { class: "dow" + (i === 0 ? " sun" : ""), role: "columnheader", text: d }));
@@ -13542,9 +14056,280 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
       } else {
         td.appendChild(document.createTextNode(shown));
       }
+      var play = playButton(alt, shown);
+      if (play) td.appendChild(play);
     });
     td.title = text;
     return td;
+  }
+
+  // ------------------------------------------------------------ recordings
+  // Audio is optional and off until the user chooses where recordings are:
+  //  - a folder picked with the File System Access API (remembered, Chromium browsers),
+  //  - a folder picked with <input webkitdirectory> (other browsers; this visit only), or
+  //  - a folder path / web address typed in (remembered).
+  var A = window.RCLAudio;
+  var AUDIO_KEYS = { base: "rcl.audio.base", map: "rcl.audio.map", mapName: "rcl.audio.mapName" };
+  var BUILTIN_MAP = document.getElementById("audio-map").textContent;
+  var audio = { source: null, pendingHandle: null, mapName: "", parsed: A.parseMap(BUILTIN_MAP),
+    queue: [], pos: 0, objectUrl: null, playingAlt: null };
+  var ael = {
+    badge: document.getElementById("audio-badge"),
+    sourceStatus: document.getElementById("audio-source-status"),
+    folderBtn: document.getElementById("audio-folder-btn"),
+    reconnectBtn: document.getElementById("audio-reconnect-btn"),
+    offBtn: document.getElementById("audio-off-btn"),
+    folderInput: document.getElementById("audio-folder-input"),
+    baseForm: document.getElementById("audio-base-form"),
+    base: document.getElementById("audio-base"),
+    mapStatus: document.getElementById("audio-map-status"),
+    mapBtn: document.getElementById("audio-map-btn"),
+    mapReset: document.getElementById("audio-map-reset"),
+    mapInput: document.getElementById("audio-map-input"),
+    player: document.getElementById("player"),
+    playerTitle: document.getElementById("player-title"),
+    playerMeta: document.getElementById("player-meta"),
+    playerAudio: document.getElementById("player-audio"),
+    playerClose: document.getElementById("player-close")
+  };
+
+  function store(key, value) {
+    try { if (value === null) localStorage.removeItem(key); else localStorage.setItem(key, value); } catch (e) { /* unavailable */ }
+  }
+  function stored(key) {
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+  }
+
+  // Remember a picked directory handle (Chromium) in IndexedDB.
+  function idb(mode, fn) {
+    return new Promise(function (resolve) {
+      try {
+        var req = indexedDB.open("rcl-audio", 1);
+        req.onupgradeneeded = function () { req.result.createObjectStore("handles"); };
+        req.onsuccess = function () {
+          var tx = req.result.transaction("handles", mode), st = tx.objectStore("handles");
+          var r = fn(st);
+          tx.oncomplete = function () { resolve(r && r.result); };
+          tx.onerror = tx.onabort = function () { resolve(null); };
+        };
+        req.onerror = function () { resolve(null); };
+      } catch (e) { resolve(null); }
+    });
+  }
+  function saveHandle(handle) { return idb("readwrite", function (st) { return handle ? st.put(handle, "music") : st.delete("music"); }); }
+  function loadHandle() { return idb("readonly", function (st) { return st.get("music"); }); }
+
+  function audioOn() { return !!audio.source; }
+
+  function setSource(src) {
+    audio.source = src;
+    if (!src || src.kind !== "handle") saveHandle(null);
+    if (!src || src.kind !== "url") store(AUDIO_KEYS.base, null);
+    if (src && src.kind === "url") store(AUDIO_KEYS.base, src.base);
+    if (src && src.kind === "handle") saveHandle(src.handle);
+    if (!src) closePlayer();
+    audio.pendingHandle = null;
+    updateAudioSettings();
+    renderReadings();
+  }
+
+  function updateAudioSettings() {
+    var s = audio.source, msg;
+    if (!s && audio.pendingHandle) {
+      msg = "“" + audio.pendingHandle.name + "” needs your permission again. Click Reconnect.";
+    } else if (!s) {
+      msg = "Not set. Recordings are off.";
+    } else if (s.kind === "url") {
+      msg = "Recordings from " + s.base;
+    } else if (s.kind === "handle") {
+      msg = "Recordings from the folder “" + s.handle.name + "” (remembered).";
+    } else {
+      msg = "Recordings from the folder “" + s.name + "” (" + Object.keys(s.index).length +
+        " files; choose it again on your next visit).";
+    }
+    ael.sourceStatus.textContent = msg;
+    ael.sourceStatus.className = "status" + (!s && audio.pendingHandle ? " warn" : "");
+    ael.reconnectBtn.hidden = !audio.pendingHandle;
+    ael.offBtn.hidden = !s;
+    ael.badge.textContent = s ? "on" : "off";
+    ael.badge.className = "badge" + (s ? " on" : "");
+    if (s && s.kind === "url") ael.base.value = s.base;
+    var p = audio.parsed, name = audio.mapName;
+    var count = Object.keys(p.map).length;
+    ael.mapStatus.textContent = (name ? "Custom mapping “" + name + "”" : "Built-in mapping") +
+      ": " + count + " psalm selection" + (count === 1 ? "" : "s") +
+      (p.errors.length ? "; " + p.errors.length + " line" + (p.errors.length === 1 ? "" : "s") +
+        " could not be read (" + p.errors[0] + ")" : ".");
+    ael.mapStatus.className = "status" + (p.errors.length ? " warn" : "");
+    ael.mapReset.hidden = !name;
+  }
+
+  function setMap(text, name) {
+    var parsed = A.parseMap(text);
+    if (name && !parsed.count) {
+      ael.mapStatus.textContent = "“" + name + "” was not used: " + (parsed.errors[0] || "no psalm selections found.");
+      ael.mapStatus.className = "status warn";
+      return;
+    }
+    audio.parsed = parsed;
+    audio.mapName = name || "";
+    store(AUDIO_KEYS.map, name ? text : null);
+    store(AUDIO_KEYS.mapName, name || null);
+    updateAudioSettings();
+    renderReadings();
+  }
+
+  /** URL for a recording, or null if it cannot be found. */
+  function recordingUrl(file) {
+    var s = audio.source;
+    if (!s) return Promise.resolve(null);
+    if (s.kind === "url") return Promise.resolve(A.joinUrl(s.base, file));
+    if (s.kind === "picked") {
+      var f = A.findPicked(s.index, file);
+      return Promise.resolve(f ? URL.createObjectURL(f) : null);
+    }
+    // directory handle: walk the path
+    var parts = file.split("/");
+    return parts.slice(0, -1).reduce(function (p, name) {
+      return p.then(function (dir) { return dir.getDirectoryHandle(name); });
+    }, Promise.resolve(s.handle)).then(function (dir) {
+      return dir.getFileHandle(parts[parts.length - 1]);
+    }).then(function (fh) { return fh.getFile(); }).then(function (f) {
+      return URL.createObjectURL(f);
+    }).catch(function () { return null; });
+  }
+
+  function playButton(alt, shown) {
+    var recs = A.recordingsFor(audio.parsed.map, alt, R.splitAlternative);
+    if (!audioOn() || !recs.length) return null;
+    var playing = audio.playingAlt === alt && !ael.player.hidden;
+    return h("button", {
+      type: "button", class: "play" + (playing ? " playing" : ""), "data-alt": alt,
+      "aria-label": "Play a recording of " + shown, title: "Play a recording of " + shown, text: "▶",
+      onclick: function () { playQueue(recs, alt, shown); }
+    });
+  }
+
+  function markPlaying() {
+    Array.prototype.forEach.call(document.querySelectorAll("button.play"), function (b) {
+      b.classList.toggle("playing", !ael.player.hidden && b.getAttribute("data-alt") === audio.playingAlt);
+    });
+  }
+
+  function playQueue(recs, alt, shown) {
+    audio.queue = recs; audio.pos = 0; audio.playingAlt = alt; audio.shown = shown;
+    playCurrent();
+  }
+
+  function playCurrent() {
+    var rec = audio.queue[audio.pos];
+    if (!rec) { closePlayer(); return; }
+    var d = A.describe(rec.file);
+    ael.player.hidden = false;
+    document.body.classList.add("has-player");
+    ael.playerTitle.textContent = audio.shown + (audio.queue.length > 1 ? " (" + (audio.pos + 1) + " of " + audio.queue.length + ")" : "");
+    var meta = [d.title, d.album, d.artist].filter(Boolean).join(" · ");
+    ael.playerMeta.textContent = meta;
+    if (rec.coverage === "excerpt") {
+      ael.playerMeta.appendChild(h("div", { text: "The recording has more than the appointed verses (" +
+        R.compactCitation("Psalm " + rec.selections.join(", ")) + ")." }));
+    }
+    markPlaying();
+    recordingUrl(rec.file).then(function (url) {
+      if (audio.queue[audio.pos] !== rec) return;
+      if (audio.objectUrl) { URL.revokeObjectURL(audio.objectUrl); audio.objectUrl = null; }
+      if (!url) { showPlayerError("Not found in your music folder: " + rec.file); return; }
+      if (url.indexOf("blob:") === 0) audio.objectUrl = url;
+      ael.playerAudio.src = url;
+      var p = ael.playerAudio.play();
+      if (p && p.catch) p.catch(function () { /* autoplay refused or load error: handled by error event */ });
+    });
+  }
+
+  function showPlayerError(text) {
+    ael.playerMeta.appendChild(h("div", { class: "warn", text: text }));
+  }
+
+  function closePlayer() {
+    ael.playerAudio.pause();
+    ael.playerAudio.removeAttribute("src");
+    ael.playerAudio.load();
+    if (audio.objectUrl) { URL.revokeObjectURL(audio.objectUrl); audio.objectUrl = null; }
+    ael.player.hidden = true;
+    document.body.classList.remove("has-player");
+    audio.queue = []; audio.playingAlt = null;
+    markPlaying();
+  }
+
+  ael.playerAudio.addEventListener("ended", function () {
+    if (audio.pos + 1 < audio.queue.length) { audio.pos++; playCurrent(); } else { markPlaying(); }
+  });
+  ael.playerAudio.addEventListener("error", function () {
+    if (!ael.playerAudio.getAttribute("src")) return;
+    var rec = audio.queue[audio.pos];
+    showPlayerError("Could not load " + (rec ? rec.file : "the recording") + ". Check the music folder setting.");
+  });
+  ael.playerClose.addEventListener("click", closePlayer);
+
+  ael.folderBtn.addEventListener("click", function () {
+    if (window.showDirectoryPicker) {
+      window.showDirectoryPicker({ id: "rcl-music", mode: "read" }).then(function (handle) {
+        setSource({ kind: "handle", handle: handle });
+      }).catch(function () { /* cancelled */ });
+    } else {
+      ael.folderInput.click();
+    }
+  });
+  ael.folderInput.addEventListener("change", function () {
+    var files = ael.folderInput.files;
+    if (!files || !files.length) return;
+    var first = files[0].webkitRelativePath || files[0].name;
+    setSource({ kind: "picked", index: A.indexPicked(files), name: first.split("/")[0] });
+    ael.folderInput.value = "";
+  });
+  ael.reconnectBtn.addEventListener("click", function () {
+    var handle = audio.pendingHandle;
+    if (!handle) return;
+    handle.requestPermission({ mode: "read" }).then(function (state) {
+      if (state === "granted") setSource({ kind: "handle", handle: handle });
+    }).catch(function () { /* refused */ });
+  });
+  ael.offBtn.addEventListener("click", function () { setSource(null); });
+  ael.baseForm.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var base = A.normalizeBase(ael.base.value);
+    if (base === null) {
+      ael.sourceStatus.textContent = "Enter a full path (starting with /) or a web address.";
+      ael.sourceStatus.className = "status warn";
+      return;
+    }
+    setSource(base ? { kind: "url", base: base } : null);
+  });
+  ael.mapBtn.addEventListener("click", function () { ael.mapInput.click(); });
+  ael.mapInput.addEventListener("change", function () {
+    var f = ael.mapInput.files && ael.mapInput.files[0];
+    if (!f) return;
+    f.text().then(function (text) { setMap(text, f.name); });
+    ael.mapInput.value = "";
+  });
+  ael.mapReset.addEventListener("click", function () { setMap(BUILTIN_MAP, ""); });
+
+  function initAudio() {
+    var mapText = stored(AUDIO_KEYS.map), mapName = stored(AUDIO_KEYS.mapName);
+    if (mapText && mapName) { audio.parsed = A.parseMap(mapText); audio.mapName = mapName; }
+    var base = stored(AUDIO_KEYS.base);
+    if (base) audio.source = { kind: "url", base: base };
+    updateAudioSettings();
+    if (audio.source || !window.indexedDB) return;
+    loadHandle().then(function (handle) {
+      if (!handle || audio.source) return;
+      var q = handle.queryPermission ? handle.queryPermission({ mode: "read" }) : Promise.resolve("prompt");
+      q.then(function (state) {
+        if (state === "granted") { audio.source = { kind: "handle", handle: handle }; renderReadings(); }
+        else audio.pendingHandle = handle;
+        updateAudioSettings();
+      });
+    });
   }
 
   // ------------------------------------------------------------ OT texts
@@ -13582,11 +14367,18 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
     return box;
   }
 
+  /** The chosen versions that are offered for this alternative. */
+  function shownVersions(alt) {
+    var offered = R.offeredVersions(otIndex, alt).map(function (v) { return v.id; });
+    return state.versions.filter(function (id) { return offered.indexOf(id) >= 0; });
+  }
+
   function textsPanel(alt) {
     var parsed = R.splitAlternative(alt);
     var wrap = h("div", { class: "texts" });
-    if (!state.versions.length) {
-      wrap.appendChild(h("p", { class: "note", text: "Choose one or more versions above to show the text." }));
+    var versions = shownVersions(alt);
+    if (!versions.length) {
+      wrap.appendChild(h("p", { class: "note", text: "Choose one or more versions to show the text." }));
       return wrap;
     }
     parsed.selections.forEach(function (sel) {
@@ -13596,7 +14388,7 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
           (sel.optional ? " (optional)" : "") }));
       }
       var grid = h("div", { class: "vgrid" });
-      R.textsFor(cex, otIndex, parsed.book, sel.ref, state.versions).forEach(function (res) {
+      R.textsFor(cex, otIndex, parsed.book, sel.ref, versions).forEach(function (res) {
         grid.appendChild(versionBlock(res, parsed.book));
       });
       group.appendChild(grid);
@@ -13605,51 +14397,101 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
     return wrap;
   }
 
-  function closeTexts(scope) {
-    Array.prototype.forEach.call(scope.querySelectorAll("tr.texts-row"), function (tr) { tr.remove(); });
-    Array.prototype.forEach.call(scope.querySelectorAll(".cite[aria-expanded=true]"), function (b) {
+  // The texts of the open reference are shown in their own full-width panel
+  // below the calendar and the readings.
+  function closeTexts() {
+    el.texts.textContent = "";
+    el.texts.hidden = true;
+    Array.prototype.forEach.call(el.readings.querySelectorAll(".cite[aria-expanded=true]"), function (b) {
       b.setAttribute("aria-expanded", "false");
     });
   }
 
-  function openTexts(btn) {
-    closeTexts(el.readings);
-    var tr = btn.closest("tr"), cols = 0;
-    Array.prototype.forEach.call(tr.children, function (c) { cols += c.colSpan || 1; });
-    var row = h("tr", { class: "texts-row" }, [h("td", { colspan: String(cols) },
-      [textsPanel(btn.getAttribute("data-alt"))])]);
-    tr.parentNode.insertBefore(row, tr.nextSibling);
+  /** "Proper 24 · Psalm · Track 2", from where the reference sits in the readings. */
+  function citationContext(btn) {
+    var parts = [], sec = btn.closest("section.obs"), tr = btn.closest("tr"), td = btn.closest("td");
+    var title = sec && sec.querySelector("h3");
+    if (title) parts.push(title.textContent);
+    var service = btn.closest(".service");
+    if (service && service.querySelector("h4")) parts.push(service.querySelector("h4").textContent);
+    var th = tr && tr.querySelector("th[scope=row]");
+    if (th) parts.push(th.textContent);
+    var table = btn.closest("table"), head = table && table.querySelector("thead tr");
+    if (head && td && td.colSpan === 1) {
+      var col = Array.prototype.indexOf.call(tr.children, td);
+      var hcell = head.children[col];
+      if (hcell && hcell.textContent) parts.push(hcell.textContent.replace(/ \(.*\)$/, ""));
+    }
+    return parts.join(" \u00b7 ");
+  }
+
+  function openTexts(btn, opts) {
+    closeTexts();
+    var alt = btn.getAttribute("data-alt");
+    el.texts.appendChild(h("div", { class: "texts-head" }, [
+      h("div", {}, [
+        h("h2", { text: R.compactCitation(alt) }),
+        h("p", { class: "meta", text: longDate(state.selected) + " \u00b7 " + citationContext(btn) })
+      ]),
+      h("button", { class: "btn icon-btn", type: "button", "aria-label": "Close text", text: "\u00d7",
+        onclick: function () { closeTexts(); state.open = null; } })
+    ]));
+    el.texts.appendChild(versionChooser(alt));
+    el.texts.appendChild(textsPanel(alt));
+    el.texts.hidden = false;
     btn.setAttribute("aria-expanded", "true");
     state.open = btn.getAttribute("data-cite");
+    if (!opts || !opts.quiet) {
+      var r = el.texts.getBoundingClientRect();
+      if (r.top > window.innerHeight - 120 || r.top < 0) {
+        el.texts.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
   }
 
   function toggleTexts(btn) {
     if (btn.getAttribute("aria-expanded") === "true") {
-      closeTexts(el.readings);
+      closeTexts();
       state.open = null;
     } else {
       openTexts(btn);
     }
   }
 
-  function versionChooser() {
+  // ------------------------------------------------------------ fold the calendar
+  var FOLD_KEY = "rcl.calendarFolded";
+  function setFolded(folded) {
+    state.folded = folded;
+    el.top.classList.toggle("folded", folded);
+    el.fold.textContent = folded ? "Show calendar" : "Hide calendar";
+    el.fold.setAttribute("aria-expanded", folded ? "false" : "true");
+    try { localStorage.setItem(FOLD_KEY, folded ? "1" : "0"); } catch (e) { /* unavailable */ }
+    renderCalendar();
+  }
+  el.fold.addEventListener("click", function () { setFolded(!state.folded); });
+
+  function versionChooser(alt) {
     var box = h("fieldset", { class: "versions" }, [h("legend", { text: "Old Testament texts" })]);
-    R.VERSIONS.forEach(function (v) {
+    var offered = R.offeredVersions(otIndex, alt);
+    offered.forEach(function (v) {
       var id = "ver-" + v.id;
       var input = h("input", { type: "checkbox", id: id, value: v.id });
       input.checked = state.versions.indexOf(v.id) >= 0;
       input.addEventListener("change", function () {
+        // Versions not offered here (Onkelos outside the Torah) keep their saved setting.
         state.versions = R.VERSIONS.map(function (d) { return d.id; }).filter(function (x) {
-          return document.getElementById("ver-" + x).checked;
+          var box = document.getElementById("ver-" + x);
+          return box ? box.checked : state.versions.indexOf(x) >= 0;
         });
         saveVersions(state.versions);
-        renderReadings();
+        // Re-render only the open text, keeping the chooser and focus in place.
+        var btn = state.open && el.readings.querySelector('[data-cite="' + state.open + '"]');
+        if (btn) openTexts(btn, { quiet: true });
         var again = document.getElementById(id);
         if (again) again.focus();
       });
       box.appendChild(h("label", { for: id }, [input, " " + v.label]));
     });
-    box.appendChild(h("p", { class: "hint", text: "Click an Old Testament reference to show its text." }));
     return box;
   }
 
@@ -13744,6 +14586,7 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
   function renderReadings() {
     var dn = state.selected, list = R.observancesOn(rows, dn);
     citeCounter = 0;
+    closeTexts();
     el.readings.textContent = "";
     el.readings.appendChild(h("h2", { class: "date", text: longDate(dn) }));
     var shown = list.filter(function (o) { return o.role !== "transferred"; });
@@ -13759,10 +14602,14 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
       el.readings.appendChild(box);
     }
     list.forEach(function (o) { el.readings.appendChild(observanceSection(o)); });
-    if (shown.length) el.readings.insertBefore(versionChooser(), el.readings.children[1]);
+    if (shown.length && el.readings.querySelector(".cite")) {
+      el.readings.insertBefore(h("p", { class: "hint", text:
+        "Click an underlined Old Testament reference to read its text below." }),
+        el.readings.children[1]);
+    }
     if (state.open) {
       var btn = el.readings.querySelector('[data-cite="' + state.open + '"]');
-      if (btn) openTexts(btn); else state.open = null;
+      if (btn) openTexts(btn, { quiet: true }); else state.open = null;
     }
   }
 
@@ -13808,6 +14655,11 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
     if (dn !== null && dn !== state.selected) select(dn, { focus: false });
   });
 
+  initAudio();
+  var wasFolded = false;
+  try { wasFolded = localStorage.getItem(FOLD_KEY) === "1"; } catch (e) { /* unavailable */ }
+  state.folded = false;
+  if (wasFolded) { state.folded = true; el.top.classList.add("folded"); el.fold.textContent = "Show calendar"; el.fold.setAttribute("aria-expanded", "false"); }
   var initial = R.parseIsoDate(location.hash.slice(1));
   select(initial !== null ? initial : todayDn(), { focus: false });
 })();

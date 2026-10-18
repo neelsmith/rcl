@@ -1,0 +1,21 @@
+{
+  "name": "rcl",
+  "version": "0.2.0",
+  "description": "Revised Common Lectionary (Episcopal) data and a single-file web app for reading the appointed lessons",
+  "private": true,
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neelsmith/rcl.git"
+  },
+  "scripts": {
+    "build": "python3 src/build_web.py",
+    "build:release": "python3 src/build_web.py --release",
+    "test": "npm run test:py && npm run test:js",
+    "test:py": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s src -t src",
+    "test:js": "node --test src/web/tests/*.test.js",
+    "check": "python3 src/rcl/datafile.py data/rcl_readings.txt && python3 src/rcl/books.py data/book_urns.txt data/rcl_readings.txt",
+    "texts": "python3 src/rcl/passages.py",
+    "audio-map": "python3 src/rcl/audio.py"
+  }
+}

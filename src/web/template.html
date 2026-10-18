@@ -49,6 +49,7 @@
   }
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--text);
@@ -61,14 +62,24 @@ header.site h1 {
   font-family: var(--serif); font-weight: 600; font-size: 1.75rem; margin: 0;
 }
 header.site p { margin: 2px 0 0; color: var(--muted); font-size: 0.95rem; }
-main {
-  max-width: 1120px; margin: 0 auto; padding: 8px 16px 32px;
-  display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px;
-}
+main { max-width: 1120px; margin: 0 auto; padding: 8px 16px 32px; }
+.top { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
 @media (min-width: 900px) {
-  main { grid-template-columns: minmax(0, 470px) minmax(0, 1fr); align-items: start; }
+  .top { grid-template-columns: minmax(0, 470px) minmax(0, 1fr); align-items: start; }
   .calendar { position: sticky; top: 16px; }
+  .top.folded { grid-template-columns: minmax(0, 1fr); }
+  .top.folded .calendar { position: static; }
 }
+/* Folded calendar: a slim bar with the date, Today, date picker and "Show calendar". */
+.top.folded #cal-body, .top.folded #prev, .top.folded #next { display: none; }
+.top.folded .calendar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 16px;
+}
+.top.folded .cal-head { margin: 0; flex: 1 1 auto; }
+.top.folded .jump { margin: 0; }
+.jump .fold { margin-left: auto; }
+.top.folded .jump .fold { margin-left: 0; }
+.top.folded #readings h2.date { display: none; } /* the date is already in the folded bar */
 .panel {
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
   padding: 16px;
@@ -177,8 +188,9 @@ table.lessons td { font-family: var(--serif); font-size: 1.05rem; }
 .src { font-size: 0.8rem; margin-top: 8px; }
 .src a { color: var(--muted); }
 /* ------------------------------------------------------------ OT texts */
+#readings > p.hint { font-size: 0.85rem; color: var(--muted); margin: 2px 0 6px; }
 fieldset.versions {
-  border: 1px solid var(--line); border-radius: 8px; margin: 10px 0 4px; padding: 6px 12px 8px;
+  border: 1px solid var(--line); border-radius: 8px; margin: 0 0 12px; padding: 6px 12px 8px;
   display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: center;
 }
 fieldset.versions legend { font-size: 0.8rem; color: var(--muted); padding: 0 4px; }
@@ -192,11 +204,15 @@ button.cite {
 button.cite:hover { color: var(--sunday); }
 button.cite[aria-expanded=true] { color: var(--sunday); text-decoration-style: solid; }
 button.cite:focus-visible { outline: 2px solid var(--today-ring); outline-offset: 2px; border-radius: 3px; }
-tr.texts-row > td { padding: 4px 0 12px; font-family: var(--sans); font-size: 1rem; }
-.texts { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.texts-panel { margin-top: 20px; scroll-margin-top: 12px; }
+.texts-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.texts-head > div { flex: 1; min-width: 0; }
+.texts-head h2 { font-family: var(--serif); font-weight: 600; font-size: 1.3rem; margin: 0; }
+.texts-head .meta { margin: 2px 0 0; }
+.texts-panel .vtext { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
 .texts h4 { margin: 4px 0 6px; font-size: 0.9rem; }
 .selection + .selection { margin-top: 12px; }
-.vgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.vgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
 .vtext h5 { margin: 0 0 4px; font-size: 0.8rem; color: var(--muted); font-weight: 600; letter-spacing: 0.02em; }
 .vbody p.verse { margin: 0 0 4px; font-family: var(--serif); font-size: 1.02rem; line-height: 1.55; }
 .vbody sup { color: var(--muted); font-family: var(--sans); font-size: 0.65rem; }
@@ -206,6 +222,45 @@ tr.texts-row > td { padding: 4px 0 12px; font-family: var(--sans); font-size: 1r
 .vbody[lang=he] p.verse, .vbody[lang=arc] p.verse { font-size: 1.25rem; line-height: 1.7; }
 .vbody[lang=grc] { font-family: "Gentium Plus", "GFS Didot", "Palatino Linotype", Georgia, serif; }
 .texts .note { margin-top: 4px; }
+/* ------------------------------------------------------------ audio */
+details.settings { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px; }
+details.settings summary { cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+.badge {
+  display: inline-block; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+  border-radius: 999px; padding: 0 7px; margin-left: 6px; border: 1px solid var(--line); color: var(--muted);
+}
+.badge.on { color: var(--sunday); border-color: var(--sunday); }
+.settings-help { font-size: 0.85rem; color: var(--muted); margin: 6px 0 8px; }
+.setting { margin: 10px 0; }
+.setting-label { font-size: 0.85rem; font-weight: 600; }
+.setting .status { font-size: 0.85rem; margin: 2px 0 6px; color: var(--muted); overflow-wrap: anywhere; }
+.setting .status.warn { color: var(--accent); }
+.setting-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+.setting-actions label { font-size: 0.8rem; color: var(--muted); flex-basis: 100%; }
+.setting-actions input[type=text] {
+  flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
+  padding: 5px 8px; min-height: 36px;
+}
+button.play {
+  font: inherit; font-size: 0.8rem; line-height: 1; color: var(--sunday); background: var(--sunday-soft);
+  border: 1px solid transparent; border-radius: 999px; width: 1.7em; height: 1.7em; margin-left: 6px;
+  cursor: pointer; vertical-align: 0.1em; padding: 0;
+}
+button.play:hover { border-color: var(--sunday); }
+button.play:focus-visible { outline: 2px solid var(--today-ring); outline-offset: 2px; }
+button.play.playing { background: var(--sunday); color: var(--surface); }
+.player {
+  position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 10;
+  width: min(760px, calc(100% - 24px)); display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18); padding: 10px 12px;
+}
+.player-info { flex: 1 1 220px; min-width: 0; }
+.player-title { font-family: var(--serif); font-weight: 600; }
+.player-meta { font-size: 0.8rem; color: var(--muted); overflow-wrap: anywhere; }
+.player-meta .warn { color: var(--accent); }
+.player audio { flex: 1 1 260px; min-width: 0; height: 40px; }
+body.has-player { padding-bottom: 110px; }
 footer a { color: var(--sunday); }
 footer .version { font-variant-numeric: tabular-nums; }
 footer {
@@ -223,6 +278,7 @@ footer {
   <p>Revised Common Lectionary for Sundays and Major Holy Days, as authorized for the Episcopal Church</p>
 </header>
 <main>
+<div class="top" id="top">
   <section class="calendar panel" aria-label="Calendar">
     <div class="cal-head">
       <button class="btn icon-btn" id="prev" type="button" aria-label="Previous month">&#8249;</button>
@@ -233,7 +289,9 @@ footer {
       <button class="btn" id="today" type="button">Today</button>
       <label class="sr-only" for="date-input" style="position:absolute;left:-9999px">Go to date</label>
       <input type="date" id="date-input" min="1900-01-01" max="2199-12-31">
+      <button class="btn fold" id="cal-fold" type="button" aria-controls="cal-body" aria-expanded="true">Hide calendar</button>
     </div>
+    <div id="cal-body">
     <div class="grid" id="grid" role="grid" aria-labelledby="month-title"></div>
     <div class="legend" aria-hidden="true">
       <span><i class="k-sunday"></i>Sunday</span>
@@ -241,9 +299,49 @@ footer {
       <span><i class="k-feast"></i>Major Feast</span>
       <span><i class="k-fast"></i>Other holy day</span>
     </div>
+    <details class="settings" id="audio-settings">
+      <summary>Psalm recordings <span class="badge" id="audio-badge">off</span></summary>
+      <p class="settings-help">Optional: play chanted psalms from your own recordings.
+        Choose the folder your recordings are in to turn this on.</p>
+      <div class="setting">
+        <div class="setting-label">Music folder</div>
+        <p class="status" id="audio-source-status">Not set.</p>
+        <div class="setting-actions">
+          <button class="btn" id="audio-folder-btn" type="button">Choose folder…</button>
+          <button class="btn" id="audio-reconnect-btn" type="button" hidden>Reconnect</button>
+          <button class="btn" id="audio-off-btn" type="button" hidden>Turn off</button>
+          <input type="file" id="audio-folder-input" webkitdirectory multiple hidden>
+        </div>
+        <form class="setting-actions" id="audio-base-form">
+          <label for="audio-base">or a folder path or web address</label>
+          <input type="text" id="audio-base" placeholder="/Users/me/Music or https://…" spellcheck="false" autocomplete="off">
+          <button class="btn" type="submit">Use</button>
+        </form>
+      </div>
+      <div class="setting">
+        <div class="setting-label">Psalm-to-recording mapping</div>
+        <p class="status" id="audio-map-status"></p>
+        <div class="setting-actions">
+          <button class="btn" id="audio-map-btn" type="button">Choose mapping file…</button>
+          <button class="btn" id="audio-map-reset" type="button" hidden>Use built-in</button>
+          <input type="file" id="audio-map-input" accept=".txt,.csv,.psv,text/plain" hidden>
+        </div>
+      </div>
+    </details>
+    </div>
   </section>
   <section class="readings panel" id="readings" aria-live="polite"></section>
+</div>
+  <section class="texts-panel panel" id="texts" aria-label="Old Testament text" hidden></section>
 </main>
+<div class="player" id="player" hidden>
+  <div class="player-info">
+    <div class="player-title" id="player-title"></div>
+    <div class="player-meta" id="player-meta"></div>
+  </div>
+  <audio id="player-audio" controls preload="metadata"></audio>
+  <button class="btn icon-btn" id="player-close" type="button" aria-label="Close player">&#215;</button>
+</div>
 <footer>
   Readings from <a href="https://www.lectionarypage.net/">lectionarypage.net</a>; Old Testament texts from <a href="https://github.com/neelsmith/compnov">compnov</a>.
   <span class="version" id="app-version">v@VERSION@</span> &middot; <!-- @DATA_SUMMARY@ -->.
@@ -254,11 +352,17 @@ footer {
 <script type="text/plain" id="ot-index">
 <!-- @OT_INDEX@ -->
 </script>
+<script type="text/plain" id="audio-map">
+<!-- @AUDIO_MAP@ -->
+</script>
 <script type="text/plain" id="ot-texts">
 <!-- @OT_TEXTS@ -->
 </script>
 <script>
 /* @LECTIONARY_JS@ */
+</script>
+<script>
+/* @AUDIO_JS@ */
 </script>
 <script>
 /* @APP_JS@ */
