@@ -14,22 +14,21 @@ format:
     toc: true
 
 website:
-  title: "imageviewer"
+  title: "rcl"
   navbar:
     background: primary
     search: true
     left:
       - text: "Home"
         file: index.qmd
-      - text: "Cataloging images"
-        file: cataloging/index.qmd          
+        
      
 
     right:
       - icon: person-circle
         menu:
-          - text: "imageviewer on github"
-            href: https://github.com/neelsmith/imageviewer        
+          - text: "rcl on github"
+            href: https://github.com/neelsmith/rcl
           - text: "Neel Smith: other hobby projects"
             href: https://neelsmith.github.io/avocational/
         aria-label: Home 
