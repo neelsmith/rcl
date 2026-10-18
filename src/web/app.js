@@ -24,7 +24,10 @@
     grid: document.getElementById("grid"), title: document.getElementById("month-title"),
     prev: document.getElementById("prev"), next: document.getElementById("next"),
     today: document.getElementById("today"), input: document.getElementById("date-input"),
-    readings: document.getElementById("readings")
+    readings: document.getElementById("readings"),
+    texts: document.getElementById("texts"),
+    top: document.getElementById("top"),
+    fold: document.getElementById("cal-fold")
   };
 
   function todayDn() {
@@ -79,7 +82,7 @@
   // ------------------------------------------------------------ calendar
   function renderCalendar() {
     var y = state.viewY, m = state.viewM;
-    el.title.textContent = MONTHS[m - 1] + " " + y;
+    el.title.textContent = state.folded ? longDate(state.selected) : MONTHS[m - 1] + " " + y;
     el.grid.textContent = "";
     ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(function (d, i) {
       el.grid.appendChild(h("div", { class: "dow" + (i === 0 ? " sun" : ""), role: "columnheader", text: d }));
@@ -459,32 +462,77 @@
     return wrap;
   }
 
-  function closeTexts(scope) {
-    Array.prototype.forEach.call(scope.querySelectorAll("tr.texts-row"), function (tr) { tr.remove(); });
-    Array.prototype.forEach.call(scope.querySelectorAll(".cite[aria-expanded=true]"), function (b) {
+  // The texts of the open reference are shown in their own full-width panel
+  // below the calendar and the readings.
+  function closeTexts() {
+    el.texts.textContent = "";
+    el.texts.hidden = true;
+    Array.prototype.forEach.call(el.readings.querySelectorAll(".cite[aria-expanded=true]"), function (b) {
       b.setAttribute("aria-expanded", "false");
     });
   }
 
-  function openTexts(btn) {
-    closeTexts(el.readings);
-    var tr = btn.closest("tr"), cols = 0;
-    Array.prototype.forEach.call(tr.children, function (c) { cols += c.colSpan || 1; });
-    var row = h("tr", { class: "texts-row" }, [h("td", { colspan: String(cols) },
-      [textsPanel(btn.getAttribute("data-alt"))])]);
-    tr.parentNode.insertBefore(row, tr.nextSibling);
+  /** "Proper 24 · Psalm · Track 2", from where the reference sits in the readings. */
+  function citationContext(btn) {
+    var parts = [], sec = btn.closest("section.obs"), tr = btn.closest("tr"), td = btn.closest("td");
+    var title = sec && sec.querySelector("h3");
+    if (title) parts.push(title.textContent);
+    var service = btn.closest(".service");
+    if (service && service.querySelector("h4")) parts.push(service.querySelector("h4").textContent);
+    var th = tr && tr.querySelector("th[scope=row]");
+    if (th) parts.push(th.textContent);
+    var table = btn.closest("table"), head = table && table.querySelector("thead tr");
+    if (head && td && td.colSpan === 1) {
+      var col = Array.prototype.indexOf.call(tr.children, td);
+      var hcell = head.children[col];
+      if (hcell && hcell.textContent) parts.push(hcell.textContent.replace(/ \(.*\)$/, ""));
+    }
+    return parts.join(" \u00b7 ");
+  }
+
+  function openTexts(btn, opts) {
+    closeTexts();
+    var alt = btn.getAttribute("data-alt");
+    el.texts.appendChild(h("div", { class: "texts-head" }, [
+      h("div", {}, [
+        h("h2", { text: R.compactCitation(alt) }),
+        h("p", { class: "meta", text: longDate(state.selected) + " \u00b7 " + citationContext(btn) })
+      ]),
+      h("button", { class: "btn icon-btn", type: "button", "aria-label": "Close text", text: "\u00d7",
+        onclick: function () { closeTexts(); state.open = null; } })
+    ]));
+    el.texts.appendChild(textsPanel(alt));
+    el.texts.hidden = false;
     btn.setAttribute("aria-expanded", "true");
     state.open = btn.getAttribute("data-cite");
+    if (!opts || !opts.quiet) {
+      var r = el.texts.getBoundingClientRect();
+      if (r.top > window.innerHeight - 120 || r.top < 0) {
+        el.texts.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
   }
 
   function toggleTexts(btn) {
     if (btn.getAttribute("aria-expanded") === "true") {
-      closeTexts(el.readings);
+      closeTexts();
       state.open = null;
     } else {
       openTexts(btn);
     }
   }
+
+  // ------------------------------------------------------------ fold the calendar
+  var FOLD_KEY = "rcl.calendarFolded";
+  function setFolded(folded) {
+    state.folded = folded;
+    el.top.classList.toggle("folded", folded);
+    el.fold.textContent = folded ? "Show calendar" : "Hide calendar";
+    el.fold.setAttribute("aria-expanded", folded ? "false" : "true");
+    try { localStorage.setItem(FOLD_KEY, folded ? "1" : "0"); } catch (e) { /* unavailable */ }
+    renderCalendar();
+  }
+  el.fold.addEventListener("click", function () { setFolded(!state.folded); });
 
   function versionChooser() {
     var box = h("fieldset", { class: "versions" }, [h("legend", { text: "Old Testament texts" })]);
@@ -598,6 +646,7 @@
   function renderReadings() {
     var dn = state.selected, list = R.observancesOn(rows, dn);
     citeCounter = 0;
+    closeTexts();
     el.readings.textContent = "";
     el.readings.appendChild(h("h2", { class: "date", text: longDate(dn) }));
     var shown = list.filter(function (o) { return o.role !== "transferred"; });
@@ -616,7 +665,7 @@
     if (shown.length) el.readings.insertBefore(versionChooser(), el.readings.children[1]);
     if (state.open) {
       var btn = el.readings.querySelector('[data-cite="' + state.open + '"]');
-      if (btn) openTexts(btn); else state.open = null;
+      if (btn) openTexts(btn, { quiet: true }); else state.open = null;
     }
   }
 
@@ -663,6 +712,10 @@
   });
 
   initAudio();
+  var wasFolded = false;
+  try { wasFolded = localStorage.getItem(FOLD_KEY) === "1"; } catch (e) { /* unavailable */ }
+  state.folded = false;
+  if (wasFolded) { state.folded = true; el.top.classList.add("folded"); el.fold.textContent = "Show calendar"; el.fold.setAttribute("aria-expanded", "false"); }
   var initial = R.parseIsoDate(location.hash.slice(1));
   select(initial !== null ? initial : todayDn(), { focus: false });
 })();

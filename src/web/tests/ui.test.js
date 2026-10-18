@@ -109,6 +109,58 @@ test("calendar and readings UI", { skip }, async (t) => {
       assert.match(await page.innerText('.vtext[data-version="septuagint"] h5'), /Exodus 33:12-23/);
     });
 
+    await t.test("texts open in a full-width panel below calendar and readings", async () => {
+      await page.setViewportSize({ width: 1280, height: 900 });
+      await page.goto(url + "#2026-10-18");
+      await page.evaluate(() => localStorage.clear());
+      await page.reload();
+      assert.equal(await page.isHidden("#texts"), true);
+      await page.check("#ver-vulgate");
+      await page.locator('button.cite:has-text("Exodus 33:12-23")').click();
+      assert.equal(await page.isVisible("#texts"), true);
+      const cal = await page.locator(".calendar").boundingBox();
+      const rd = await page.locator("#readings").boundingBox();
+      const tx = await page.locator("#texts").boundingBox();
+      assert.ok(Math.abs(cal.y - rd.y) < 2, "calendar and readings side by side");
+      assert.ok(tx.y >= Math.max(cal.y + cal.height, rd.y + rd.height), "texts below both");
+      assert.ok(Math.abs(tx.x - cal.x) < 2 && Math.abs(tx.x + tx.width - (rd.x + rd.width)) < 2, "texts span the page");
+      assert.match(await page.innerText("#texts h2"), /Exodus 33:12-23/);
+      assert.match(await page.innerText("#texts .texts-head .meta"), /Proper 24 · First reading · Track 1/);
+      // re-rendering for a new version keeps it open; changing the date closes it
+      await page.check("#ver-septuagint");
+      assert.equal(await page.locator("#texts .vtext").count(), 2);
+      await page.click('#texts button[aria-label="Close text"]');
+      assert.equal(await page.isHidden("#texts"), true);
+      assert.equal(await page.locator(".cite[aria-expanded=true]").count(), 0);
+      await page.locator('button.cite:has-text("Psalm 99")').click();
+      await page.fill("#date-input", "2026-10-25");
+      await page.dispatchEvent("#date-input", "change");
+      assert.equal(await page.isHidden("#texts"), true);
+    });
+
+    await t.test("the calendar folds to a slim bar and stays folded", async () => {
+      await page.goto(url + "#2026-10-18");
+      assert.equal(await page.isVisible("#grid"), true);
+      const before = (await page.locator(".calendar").boundingBox()).height;
+      await page.click("#cal-fold");
+      assert.equal(await page.isHidden("#grid"), true);
+      assert.equal(await page.innerText("#cal-fold"), "Show calendar");
+      assert.match(await page.innerText("#month-title"), /Sunday, October 18, 2026/);
+      const cal = await page.locator(".calendar").boundingBox();
+      const rd = await page.locator("#readings").boundingBox();
+      assert.ok(cal.height < before / 3, "folded calendar is short");
+      assert.ok(rd.y > cal.y + cal.height - 1 && Math.abs(rd.width - cal.width) < 2, "readings full width below");
+      // the date can still be changed while folded
+      await page.click("#today");
+      await page.reload();
+      assert.equal(await page.isHidden("#grid"), true);
+      await page.click("#cal-fold");
+      assert.equal(await page.isVisible("#grid"), true);
+      assert.equal(await page.getAttribute("#cal-fold", "aria-expanded"), "true");
+      await page.reload();
+      assert.equal(await page.isVisible("#grid"), true);
+    });
+
     await t.test("psalm recordings are off until a music folder is chosen", async () => {
       const os = require("node:os");
       // A tiny valid WAV file, saved under the mapped names for Psalms 96 and 99.

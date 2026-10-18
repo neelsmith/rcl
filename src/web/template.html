@@ -62,14 +62,24 @@ header.site h1 {
   font-family: var(--serif); font-weight: 600; font-size: 1.75rem; margin: 0;
 }
 header.site p { margin: 2px 0 0; color: var(--muted); font-size: 0.95rem; }
-main {
-  max-width: 1120px; margin: 0 auto; padding: 8px 16px 32px;
-  display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px;
-}
+main { max-width: 1120px; margin: 0 auto; padding: 8px 16px 32px; }
+.top { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
 @media (min-width: 900px) {
-  main { grid-template-columns: minmax(0, 470px) minmax(0, 1fr); align-items: start; }
+  .top { grid-template-columns: minmax(0, 470px) minmax(0, 1fr); align-items: start; }
   .calendar { position: sticky; top: 16px; }
+  .top.folded { grid-template-columns: minmax(0, 1fr); }
+  .top.folded .calendar { position: static; }
 }
+/* Folded calendar: a slim bar with the date, Today, date picker and "Show calendar". */
+.top.folded #cal-body, .top.folded #prev, .top.folded #next { display: none; }
+.top.folded .calendar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 16px;
+}
+.top.folded .cal-head { margin: 0; flex: 1 1 auto; }
+.top.folded .jump { margin: 0; }
+.jump .fold { margin-left: auto; }
+.top.folded .jump .fold { margin-left: 0; }
+.top.folded #readings h2.date { display: none; } /* the date is already in the folded bar */
 .panel {
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
   padding: 16px;
@@ -193,11 +203,15 @@ button.cite {
 button.cite:hover { color: var(--sunday); }
 button.cite[aria-expanded=true] { color: var(--sunday); text-decoration-style: solid; }
 button.cite:focus-visible { outline: 2px solid var(--today-ring); outline-offset: 2px; border-radius: 3px; }
-tr.texts-row > td { padding: 4px 0 12px; font-family: var(--sans); font-size: 1rem; }
-.texts { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.texts-panel { margin-top: 20px; scroll-margin-top: 12px; }
+.texts-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.texts-head > div { flex: 1; min-width: 0; }
+.texts-head h2 { font-family: var(--serif); font-weight: 600; font-size: 1.3rem; margin: 0; }
+.texts-head .meta { margin: 2px 0 0; }
+.texts-panel .vtext { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
 .texts h4 { margin: 4px 0 6px; font-size: 0.9rem; }
 .selection + .selection { margin-top: 12px; }
-.vgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.vgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
 .vtext h5 { margin: 0 0 4px; font-size: 0.8rem; color: var(--muted); font-weight: 600; letter-spacing: 0.02em; }
 .vbody p.verse { margin: 0 0 4px; font-family: var(--serif); font-size: 1.02rem; line-height: 1.55; }
 .vbody sup { color: var(--muted); font-family: var(--sans); font-size: 0.65rem; }
@@ -263,6 +277,7 @@ footer {
   <p>Revised Common Lectionary for Sundays and Major Holy Days, as authorized for the Episcopal Church</p>
 </header>
 <main>
+<div class="top" id="top">
   <section class="calendar panel" aria-label="Calendar">
     <div class="cal-head">
       <button class="btn icon-btn" id="prev" type="button" aria-label="Previous month">&#8249;</button>
@@ -273,7 +288,9 @@ footer {
       <button class="btn" id="today" type="button">Today</button>
       <label class="sr-only" for="date-input" style="position:absolute;left:-9999px">Go to date</label>
       <input type="date" id="date-input" min="1900-01-01" max="2199-12-31">
+      <button class="btn fold" id="cal-fold" type="button" aria-controls="cal-body" aria-expanded="true">Hide calendar</button>
     </div>
+    <div id="cal-body">
     <div class="grid" id="grid" role="grid" aria-labelledby="month-title"></div>
     <div class="legend" aria-hidden="true">
       <span><i class="k-sunday"></i>Sunday</span>
@@ -310,8 +327,11 @@ footer {
         </div>
       </div>
     </details>
+    </div>
   </section>
   <section class="readings panel" id="readings" aria-live="polite"></section>
+</div>
+  <section class="texts-panel panel" id="texts" aria-label="Old Testament text" hidden></section>
 </main>
 <div class="player" id="player" hidden>
   <div class="player-info">
