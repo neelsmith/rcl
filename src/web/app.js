@@ -443,7 +443,7 @@
     var parsed = R.splitAlternative(alt);
     var wrap = h("div", { class: "texts" });
     if (!state.versions.length) {
-      wrap.appendChild(h("p", { class: "note", text: "Choose one or more versions above to show the text." }));
+      wrap.appendChild(h("p", { class: "note", text: "Choose one or more versions to show the text." }));
       return wrap;
     }
     parsed.selections.forEach(function (sel) {
@@ -501,6 +501,7 @@
       h("button", { class: "btn icon-btn", type: "button", "aria-label": "Close text", text: "\u00d7",
         onclick: function () { closeTexts(); state.open = null; } })
     ]));
+    el.texts.appendChild(versionChooser());
     el.texts.appendChild(textsPanel(alt));
     el.texts.hidden = false;
     btn.setAttribute("aria-expanded", "true");
@@ -545,13 +546,14 @@
           return document.getElementById("ver-" + x).checked;
         });
         saveVersions(state.versions);
-        renderReadings();
+        // Re-render only the open text, keeping the chooser and focus in place.
+        var btn = state.open && el.readings.querySelector('[data-cite="' + state.open + '"]');
+        if (btn) openTexts(btn, { quiet: true });
         var again = document.getElementById(id);
         if (again) again.focus();
       });
       box.appendChild(h("label", { for: id }, [input, " " + v.label]));
     });
-    box.appendChild(h("p", { class: "hint", text: "Click an Old Testament reference to show its text." }));
     return box;
   }
 
@@ -662,7 +664,11 @@
       el.readings.appendChild(box);
     }
     list.forEach(function (o) { el.readings.appendChild(observanceSection(o)); });
-    if (shown.length) el.readings.insertBefore(versionChooser(), el.readings.children[1]);
+    if (shown.length && el.readings.querySelector(".cite")) {
+      el.readings.insertBefore(h("p", { class: "hint", text:
+        "Click an underlined Old Testament reference to read its text below." }),
+        el.readings.children[1]);
+    }
     if (state.open) {
       var btn = el.readings.querySelector('[data-cite="' + state.open + '"]');
       if (btn) openTexts(btn, { quiet: true }); else state.open = null;

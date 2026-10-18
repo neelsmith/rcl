@@ -104,8 +104,9 @@ test("calendar and readings UI", { skip }, async (t) => {
       assert.equal(await page.locator(".texts").count(), 0);
       // the choice of versions is remembered
       await page.reload();
-      assert.equal(await page.isChecked("#ver-septuagint"), true);
+      assert.equal(await page.locator("#ver-septuagint").count(), 0); // chooser lives in the text panel
       await page.locator('button.cite:has-text("Exodus 33:12-23")').click();
+      assert.equal(await page.isChecked("#ver-septuagint"), true);
       assert.match(await page.innerText('.vtext[data-version="septuagint"] h5'), /Exodus 33:12-23/);
     });
 
@@ -115,9 +116,12 @@ test("calendar and readings UI", { skip }, async (t) => {
       await page.evaluate(() => localStorage.clear());
       await page.reload();
       assert.equal(await page.isHidden("#texts"), true);
-      await page.check("#ver-vulgate");
+      assert.match(await page.innerText("#readings"), /Click an underlined Old Testament reference/);
       await page.locator('button.cite:has-text("Exodus 33:12-23")').click();
       assert.equal(await page.isVisible("#texts"), true);
+      assert.match(await page.innerText("#texts"), /Choose one or more versions/);
+      await page.check("#texts #ver-vulgate");
+      assert.equal(await page.evaluate(() => document.activeElement.id), "ver-vulgate");
       const cal = await page.locator(".calendar").boundingBox();
       const rd = await page.locator("#readings").boundingBox();
       const tx = await page.locator("#texts").boundingBox();
