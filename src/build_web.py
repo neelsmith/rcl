@@ -7,8 +7,10 @@ src/web/template.html, so the result works from a web server or as a local
 file. The data file is validated first; the build stops on errors.
 
 The version comes from the "version" field of package.json at the repository
-root (semantic versioning, e.g. 0.1.0). Builds that are not an exact tagged release get git
-build metadata appended, e.g. 0.1.0+3f2a9c1 or 0.1.0+3f2a9c1-dirty.
+root (semantic versioning, e.g. 0.1.0); the page footer always shows it plainly
+(v0.1.0). Builds that are not an exact tagged release also record git build
+metadata, e.g. 0.1.0+3f2a9c1 or 0.1.0+3f2a9c1-dirty, in <meta name="version">
+and in the footer version's tooltip.
 
 Usage (from the repository root):
     npm run build            (= python3 src/build_web.py [output_path])
@@ -111,7 +113,7 @@ def release_errors(version, info):
 
 
 # -------------------------------------------------------------------- build
-def build(data_text, template, lectionary_js, app_js, today=None, version="0.0.0",
+def build(data_text, template, lectionary_js, app_js, today=None, version="0.0.0", build_id=None,
           ot_index="", ot_texts="", audio_js="", audio_map="", audio_files=""):
     """Return the finished HTML. Raises ValueError if the data is invalid."""
     lines = data_text.splitlines()
@@ -135,7 +137,8 @@ def build(data_text, template, lectionary_js, app_js, today=None, version="0.0.0
         "<!-- @AUDIO_MAP@ -->": (audio_map.strip(), 1),
         "<!-- @AUDIO_FILES@ -->": (audio_files.strip(), 1),
         "/* @AUDIO_JS@ */": (audio_js, 1),
-        "@VERSION@": (version, None),
+        "@VERSION@": (version, None),          # plain version, shown in the footer
+        "@BUILD@": (build_id or version, None),  # with git build metadata: meta tag and tooltip
         "/* @LECTIONARY_JS@ */": (lectionary_js, 1),
         "/* @APP_JS@ */": (app_js, 1),
     }
@@ -163,7 +166,7 @@ def main(argv=None):
         shown = display_version(version, info)
         html = build(read(DATA), read(os.path.join(WEB, "template.html")),
                      read(os.path.join(WEB, "lectionary.js")), read(os.path.join(WEB, "app.js")),
-                     version=shown, ot_index=read(OT_INDEX), ot_texts=read(OT_TEXTS),
+                     version=version, build_id=shown, ot_index=read(OT_INDEX), ot_texts=read(OT_TEXTS),
                      audio_js=read(os.path.join(WEB, "audio.js")), audio_map=read(AUDIO_MAP),
                      audio_files=read(AUDIO_FILES))
     except (OSError, ValueError) as exc:
@@ -172,7 +175,7 @@ def main(argv=None):
     os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
     with open(out, "w", encoding="utf-8") as fh:
         fh.write(html)
-    print(f"wrote {out} (version {shown}, {len(html):,} bytes)")
+    print(f"wrote {out} (v{version}, build {shown}, {len(html):,} bytes)")
     return 0
 
 

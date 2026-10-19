@@ -8,10 +8,11 @@ version (`MAJOR.MINOR.PATCH`, optionally with a pre-release such as `0.2.0-beta.
 - PATCH: corrections (e.g. a wrong citation).
 
 ## What the build shows
-`npm run build` (= `python3 src/build_web.py`) puts the version in the page footer (`v0.1.0`) and in
-`<meta name="version" content="...">`.
+`npm run build` (= `python3 src/build_web.py`) always shows the plain version in the page footer
+(`v0.1.0`). The build id below goes in `<meta name="version" content="...">` and the footer
+version's tooltip.
 
-| Checkout state                          | Version shown          |
+| Checkout state                          | Build id               |
 |-----------------------------------------|------------------------|
 | clean, HEAD tagged `v<version>`         | `0.1.0`                |
 | clean, not tagged (or tagged otherwise) | `0.1.0+3f2a9c1`        |

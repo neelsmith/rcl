@@ -7,7 +7,7 @@ from rcl.datafile import COLUMNS
 HEADER = "|".join(COLUMNS)
 ROW = ("a-advent-1|The First Sunday of Advent|A|advent|||Isaiah 2:1-2:5|Psalm 122|"
        "Romans 13:11-13:14|Matthew 24:36-24:44||https://example.org/a")
-TEMPLATE = ("<meta name='version' content='@VERSION@'><p>v@VERSION@ <!-- @DATA_SUMMARY@ --></p>"
+TEMPLATE = ("<meta name='version' content='@BUILD@'><p>v@VERSION@ <!-- @DATA_SUMMARY@ --></p>"
             "<script type='text/plain'><!-- @DATA@ --></script>"
             "<script type='text/plain'><!-- @OT_INDEX@ --></script>"
             "<script type='text/plain'><!-- @OT_TEXTS@ --></script>"
@@ -19,15 +19,17 @@ TEMPLATE = ("<meta name='version' content='@VERSION@'><p>v@VERSION@ <!-- @DATA_S
 class BuildTests(unittest.TestCase):
     def test_build_inlines_everything(self):
         html = build_web.build(HEADER + "\n" + ROW + "\n", TEMPLATE, "var L=1;", "var A=2;",
-                               today="2026-10-16", version="1.2.3")
+                               today="2026-10-16", version="1.2.3",
+                               build_id="1.2.3+abc1234")
         self.assertIn(ROW, html)
         self.assertIn("var L=1;", html)
         self.assertIn("var A=2;", html)
         self.assertIn("1 entries, built 2026-10-16", html)
         self.assertNotIn("@DATA@", html)
-        self.assertIn("content='1.2.3'", html)
+        self.assertIn("content='1.2.3+abc1234'", html)
         self.assertIn("v1.2.3 ", html)
         self.assertNotIn("@VERSION@", html)
+        self.assertNotIn("@BUILD@", html)
 
     def test_invalid_data_stops_build(self):
         bad = ROW.replace("Psalm 122", "Psalm 50:1-6")
