@@ -35,6 +35,7 @@ test("calendar and readings UI", { skip }, async (t) => {
       const meta = await page.getAttribute('meta[name="version"]', "content");
       assert.match(meta, /^\d+\.\d+\.\d+/);
       assert.equal(await page.innerText("#app-version"), "v" + meta);
+      assert.match(await page.innerText("footer"), new RegExp("^v" + meta.replace(/[.+]/g, "\\$&") + " · Readings from lectionarypage\\.net"));
     });
 
     await t.test("a Sunday shows both tracks and a transferred feast", async () => {
