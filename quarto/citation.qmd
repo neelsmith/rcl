@@ -1,0 +1,53 @@
+---
+title: Citation of Biblical passages
+---
+
+## Citation of single-chapter books
+
+- **Single-chapter books:** `Philemon 1-21` became `Philemon 1:1-1:21`.
+
+
+## Episcopal departures from the common RCL
+
+These are the Episcopal Church's own choices, not errors.
+
+- **Year C, Lent 3:** Exodus 3:1-15.
+- **First Sunday after Christmas:** John 1:1-18 in every year.
+- **Holy Name, Presentation, Annunciation, Visitation and Holy Cross:** the lessons are taken from lectionarypage's RCL pages for these feasts.
+
+## Numbering: BCP citations compared with the compnov texts
+
+### Adjusted automatically (Septuagint and Vulgate Psalms)
+
+| BCP | Septuagint / Vulgate |
+|---|---|
+| Psalms 1-9 and 148-150 | same number |
+| 10 | 9:22 onward |
+| 11-113 | number minus 1 |
+| 114 | 113:1-8 |
+| 115 | 113:9 onward |
+| 116:1-9 | 114 |
+| 116:10-19 | 115 |
+| 117-146 | number minus 1 |
+| 147:1-11 | 146 |
+| 147:12-20 | 147:1-9 |
+
+### Not adjusted (flagged in the app)
+
+- **Psalm titles:** the Masoretic, Septuagint and Vulgate count a psalm's title as verse 1 or 2; the BCP does not. Verse numbers may therefore be off by one or two.
+- **BCP Psalter verse divisions that differ from the corpus versions:**
+  - *Not found at that number in any version:* 17:16, 37:41-42, 104:37 (also cited as 104:37b), 147:21c.
+  - *Only partly found:* 50:23-24, 62:6-14, 132:14-19, 145:15-22, 145:18-22, 147:13-21.
+- **Different chapter divisions:**
+  - Malachi 4:1-2a = Masoretic/Septuagint 3:19-20a (not found in those versions).
+  - Joel 2:28-32 = Masoretic/Septuagint 3:1-5, so Joel 2:23-32 is only partly found.
+  - Hosea 1:10 = Masoretic/Septuagint 2:1, so Hosea 1:2-10 is only partly found.
+  - 2 Samuel 18:33 = Masoretic/Septuagint 19:1, so 2 Samuel 18:31-33 is only partly found.
+- **Septuagint text differs:**
+  - 1 Samuel 17:19-23 and 17:57-18:5 are not found, and 18:10-16 is only partly found. These passages are missing from the Greek text.
+  - Jeremiah 26:1-9 and 32:6-15 are only partly found, and 32:1-3a is not found. These chapters are numbered and ordered differently in the Septuagint.
+  - Lamentations 3:19-24 is only partly found.
+- **Vulgate:** Job 42:10-17 and Haggai 1:15b-2:9 are only partly found.
+
+The app shows whatever text exists at the cited numbers, and says when a reference is missing or only partly found.
+

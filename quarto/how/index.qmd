@@ -1,0 +1,13 @@
+---
+title: "How to use the `rcl` app"
+---
+
+
+The current release version is always installed on the project's github pages site at [https://neelsmith.github.io/rcl/](https://neelsmith.github.io/rcl/).
+
+## How to...
+
+- choose dates
+- choose texts
+- adjust view
+- configure and play audio

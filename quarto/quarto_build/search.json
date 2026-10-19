@@ -4,6 +4,62 @@
     "href": "index.html",
     "title": "rcl",
     "section": "",
-    "text": "Data resources and a web app for reading the Revised Common Lectionary"
+    "text": "Data resources and a web app for reading the Revised Common Lectionary."
+  },
+  {
+    "objectID": "citation.html",
+    "href": "citation.html",
+    "title": "Citation of Biblical passages",
+    "section": "",
+    "text": "Single-chapter books: Philemon 1-21 became Philemon 1:1-1:21."
+  },
+  {
+    "objectID": "citation.html#errors-and-ambiguities-in-the-source-corrected-in-the-data",
+    "href": "citation.html#errors-and-ambiguities-in-the-source-corrected-in-the-data",
+    "title": "Citation of Biblical passages",
+    "section": "",
+    "text": "Day\nProblem on lectionarypage.net\nWhat the data does\n\n\n\n\nProper 11, Year A\nWisdom 12:13, 16-19 printed at the end of the Track 1 line\nMoved to Track 2, as an alternative to Isaiah 44:6-8 (the RCL pattern)\n\n\nProper 20, Year B\nWisdom 1:16-2:1, 12-22 printed at the end of the Track 1 line\nMoved to Track 2, as an alternative to Jeremiah 11:18-20\n\n\nProper 8, Year B, Track 2\nLamentations 3:21-33 printed in the psalm slot\nTreated as an alternative first reading, with Psalm 30 as the psalm. The page’s own editor’s note says this.\n\n\n\nAll three are flagged in the notes column."
+  },
+  {
+    "objectID": "citation.html#inconsistent-notation-in-the-source-normalized",
+    "href": "citation.html#inconsistent-notation-in-the-source-normalized",
+    "title": "Citation of Biblical passages",
+    "section": "2. Inconsistent notation in the source, normalized",
+    "text": "2. Inconsistent notation in the source, normalized\n\nSingle-chapter books: Philemon 1-21 became Philemon 1:1-1:21."
+  },
+  {
+    "objectID": "citation.html#episcopal-departures-from-the-common-rcl-kept-as-published",
+    "href": "citation.html#episcopal-departures-from-the-common-rcl-kept-as-published",
+    "title": "Citation of Biblical passages",
+    "section": "3. Episcopal departures from the common RCL (kept as published)",
+    "text": "3. Episcopal departures from the common RCL (kept as published)\nThese are the Episcopal Church’s own choices, not errors.\n\nYear C, Lent 3: Exodus 3:1-15.\nFirst Sunday after Christmas: John 1:1-18 in every year.\nHoly Name, Presentation, Annunciation, Visitation and Holy Cross: the lessons are taken from lectionarypage’s RCL pages for these feasts."
+  },
+  {
+    "objectID": "citation.html#numbering-bcp-citations-compared-with-the-compnov-texts",
+    "href": "citation.html#numbering-bcp-citations-compared-with-the-compnov-texts",
+    "title": "Citation of Biblical passages",
+    "section": "Numbering: BCP citations compared with the compnov texts",
+    "text": "Numbering: BCP citations compared with the compnov texts\n\nAdjusted automatically (Septuagint and Vulgate Psalms)\n\n\n\nBCP\nSeptuagint / Vulgate\n\n\n\n\nPsalms 1-9 and 148-150\nsame number\n\n\n10\n9:22 onward\n\n\n11-113\nnumber minus 1\n\n\n114\n113:1-8\n\n\n115\n113:9 onward\n\n\n116:1-9\n114\n\n\n116:10-19\n115\n\n\n117-146\nnumber minus 1\n\n\n147:1-11\n146\n\n\n147:12-20\n147:1-9\n\n\n\n\n\nNot adjusted (flagged in the app)\n\nPsalm titles: the Masoretic, Septuagint and Vulgate count a psalm’s title as verse 1 or 2; the BCP does not. Verse numbers may therefore be off by one or two.\nBCP Psalter verse divisions that differ from the corpus versions:\n\nNot found at that number in any version: 17:16, 37:41-42, 104:37 (also cited as 104:37b), 147:21c.\nOnly partly found: 50:23-24, 62:6-14, 132:14-19, 145:15-22, 145:18-22, 147:13-21.\n\nDifferent chapter divisions:\n\nMalachi 4:1-2a = Masoretic/Septuagint 3:19-20a (not found in those versions).\nJoel 2:28-32 = Masoretic/Septuagint 3:1-5, so Joel 2:23-32 is only partly found.\nHosea 1:10 = Masoretic/Septuagint 2:1, so Hosea 1:2-10 is only partly found.\n2 Samuel 18:33 = Masoretic/Septuagint 19:1, so 2 Samuel 18:31-33 is only partly found.\n\nSeptuagint text differs:\n\n1 Samuel 17:19-23 and 17:57-18:5 are not found, and 18:10-16 is only partly found. These passages are missing from the Greek text.\nJeremiah 26:1-9 and 32:6-15 are only partly found, and 32:1-3a is not found. These chapters are numbered and ordered differently in the Septuagint.\nLamentations 3:19-24 is only partly found.\n\nVulgate: Job 42:10-17 and Haggai 1:15b-2:9 are only partly found.\n\nThe app shows whatever text exists at the cited numbers, and says when a reference is missing or only partly found."
+  },
+  {
+    "objectID": "citation.html#psalm-recordings",
+    "href": "citation.html#psalm-recordings",
+    "title": "Citation of Biblical passages",
+    "section": "5. Psalm recordings",
+    "text": "5. Psalm recordings\n\nExcerpts: 181 of the 250 appointed psalm selections are only part of a recording, which is the whole psalm, or for Psalm 119 one of five sections. The player notes this; there are no verse timings yet.\nUnchecked numbering: the recordings use their own psalter’s text. Where the BCP’s verse numbers differ (see section 4), this hasn’t been checked against the recordings."
+  },
+  {
+    "objectID": "citation.html#citation-of-single-chapter-books",
+    "href": "citation.html#citation-of-single-chapter-books",
+    "title": "Citation of Biblical passages",
+    "section": "",
+    "text": "Single-chapter books: Philemon 1-21 became Philemon 1:1-1:21."
+  },
+  {
+    "objectID": "citation.html#episcopal-departures-from-the-common-rcl",
+    "href": "citation.html#episcopal-departures-from-the-common-rcl",
+    "title": "Citation of Biblical passages",
+    "section": "Episcopal departures from the common RCL",
+    "text": "Episcopal departures from the common RCL\nThese are the Episcopal Church’s own choices, not errors.\n\nYear C, Lent 3: Exodus 3:1-15.\nFirst Sunday after Christmas: John 1:1-18 in every year.\nHoly Name, Presentation, Annunciation, Visitation and Holy Cross: the lessons are taken from lectionarypage’s RCL pages for these feasts."
   }
 ]
