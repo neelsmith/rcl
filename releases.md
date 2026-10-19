@@ -2,6 +2,8 @@
 
 Current release: **0.2.1**.
 
+**?**, *??*: Tweak version display in notes.
+
 **0.2.1**, *Oct. 19, 2026*: minor changes to arrangement of content in rcl.html; no functional changes. Addition of initial placeholder pages for quarto web site.
 
 **0.2.0**, *Oct. 18, 2026*: adds option to include audio tracks for chanted psalms. Reorganize build to use `npm`.
