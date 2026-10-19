@@ -2,18 +2,23 @@
 title: Citation of Biblical passages
 ---
 
-## Citation of single-chapter books
+::: {.callout-caution}
+## Documentation in progress
+This page will document discrepancies in canonical citation of Biblical passages and how the `rcl` app handles them. Its currently incomplete and in progress state includes some AI generated slop to review.
+:::
 
-- **Single-chapter books:** `Philemon 1-21` became `Philemon 1:1-1:21`.
+
+This page documents discrepancies in canonical citation of Biblical passages and how the `rcl` app handles them.
 
 
-## Episcopal departures from the common RCL
 
-These are the Episcopal Church's own choices, not errors.
+- Single-chapter books: `Philemon 1-21` became `Philemon 1:1-1:21`.
+
+`rcl` follows the Episcopal Church's readings. In the following instances, those depart from the RCL:
 
 - **Year C, Lent 3:** Exodus 3:1-15.
 - **First Sunday after Christmas:** John 1:1-18 in every year.
-- **Holy Name, Presentation, Annunciation, Visitation and Holy Cross:** the lessons are taken from lectionarypage's RCL pages for these feasts.
+- **Holy Name, Presentation, Annunciation, Visitation and Holy Cross:** the lessons are taken from the pages on [https://lectionarypage.net](https://lectionarypage.net) for these feasts.
 
 ## Numbering: BCP citations compared with the compnov texts
 

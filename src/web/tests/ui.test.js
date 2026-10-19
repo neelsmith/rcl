@@ -134,7 +134,7 @@ test("calendar and readings UI", { skip }, async (t) => {
       assert.equal(await page.isChecked("#texts #ver-onkelos"), true);
       await page.uncheck("#texts #ver-onkelos");
       const cal = await page.locator(".calendar").boundingBox();
-      const rd = await page.locator("#readings").boundingBox();
+      const rd = await page.locator("#readings-panel").boundingBox();
       const tx = await page.locator("#texts").boundingBox();
       assert.ok(Math.abs(cal.y - rd.y) < 2, "calendar and readings side by side");
       assert.ok(tx.y >= Math.max(cal.y + cal.height, rd.y + rd.height), "texts below both");
@@ -160,9 +160,12 @@ test("calendar and readings UI", { skip }, async (t) => {
       await page.click("#cal-fold");
       assert.equal(await page.isHidden("#grid"), true);
       assert.equal(await page.innerText("#cal-fold"), "Show calendar");
+      // the recording settings live with the readings, so they stay available while folded
+      assert.equal(await page.locator("#readings-panel #audio-settings").count(), 1);
+      assert.equal(await page.isVisible("#audio-settings summary"), true);
       assert.match(await page.innerText("#month-title"), /Sunday, October 18, 2026/);
       const cal = await page.locator(".calendar").boundingBox();
-      const rd = await page.locator("#readings").boundingBox();
+      const rd = await page.locator("#readings-panel").boundingBox();
       assert.ok(cal.height < before / 3, "folded calendar is short");
       assert.ok(rd.y > cal.y + cal.height - 1 && Math.abs(rd.width - cal.width) < 2, "readings full width below");
       // the date can still be changed while folded
@@ -212,6 +215,8 @@ test("calendar and readings UI", { skip }, async (t) => {
         return a.src.startsWith("blob:") && a.readyState >= 1;
       });
       assert.match(await page.innerText("#player-title"), /Psalm 99/);
+      // the player lists the catalog's artist first, then the recording title and album
+      assert.match(await page.innerText("#player-meta"), /^Compilations · Psalm 99 · The Complete Psalms of David, Series 2, Volume 7/);
       assert.equal(await page.locator("button.play.playing").count(), 1);
       // Psalm 96:1-9, (96:10-13) is two selections of one recording: an excerpt.
       await page.click('button.play[data-alt^="Psalm 96"]');

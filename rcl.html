@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lectionary Readings</title>
-<meta name="version" content="0.2.0+9e7d37f-dirty">
+<meta name="version" content="0.2.0+2b54725-dirty">
 <meta name="description" content="Revised Common Lectionary readings (Episcopal use) for Sundays and Major Holy Days.">
 <style>
 :root {
@@ -299,6 +299,10 @@ footer {
       <span><i class="k-feast"></i>Major Feast</span>
       <span><i class="k-fast"></i>Other holy day</span>
     </div>
+    </div>
+  </section>
+  <section class="readings panel" id="readings-panel">
+    <div id="readings" aria-live="polite"></div>
     <details class="settings" id="audio-settings">
       <summary>Psalm recordings <span class="badge" id="audio-badge">off</span></summary>
       <p class="settings-help">Optional: play chanted psalms from your own recordings.
@@ -328,9 +332,7 @@ footer {
         </div>
       </div>
     </details>
-    </div>
   </section>
-  <section class="readings panel" id="readings" aria-live="polite"></section>
 </div>
   <section class="texts-panel panel" id="texts" aria-label="Old Testament text" hidden></section>
 </main>
@@ -344,7 +346,7 @@ footer {
 </div>
 <footer>
   Readings from <a href="https://www.lectionarypage.net/">lectionarypage.net</a>; Old Testament texts from <a href="https://github.com/neelsmith/compnov">compnov</a>.
-  <span class="version" id="app-version">v0.2.0+9e7d37f-dirty</span> &middot; 293 entries, built 2026-10-18.
+  <span class="version" id="app-version">v0.2.0+2b54725-dirty</span> &middot; 293 entries, built 2026-10-19.
 </footer>
 <script type="text/plain" id="rcl-data">
 id|label|year|season|track|fixed_date|first_reading|psalm|second_reading|gospel|notes|source_url
@@ -2750,6 +2752,163 @@ selection|psalm|file|coverage
 148|148|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-16 Psalm 148 (Harrison).m4a|whole
 149|149|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-17 Psalm 149 (Whitlock).m4a|whole
 150|150|The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-18 Psalm 150 (Ravalde).m4a|whole
+</script>
+<script type="text/plain" id="audio-files">
+file|psalm|verses|artist|album|chants
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-01 Psalm 119, 1-32.m4a|119|1-32|Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-02 Psalm 119, 33-72.m4a|119|33-72|Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-03 Psalm 119, 73-104.m4a|119|73-104|Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-04 Psalm 119, 105-144.m4a|119|105-144|Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-05 Psalm 119, 145-176.m4a|119|145-176|Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-06 Psalm 120.m4a|120||Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-07 Psalm 121.m4a|121||Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-08 Psalm 122.m4a|122||Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-09 Psalm 123.m4a|123||Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-10 Psalm 124.m4a|124||Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-11 Psalm 125.m4a|125||Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-12 Psalm 126.m4a|126||Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-13 Psalm 127.m4a|127||Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-14 Psalm 128.m4a|128||Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-15 Psalm 129.m4a|129||Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-16 Psalm 130.m4a|130||Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-17 Psalm 131.m4a|131||Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir of Salisbury Cathedral/Complete Psalms Of David - Series 2/9-18 Psalm 132.m4a|132||Choir of Salisbury Cathedral|Complete Psalms Of David - Series 2|
+Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/01 Psalm 105 (Attwood, Deffell, Saunders, Moorse).m4a|105||Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone|The Complete Psalms Of David (Series 2) Vol. 8|Attwood, Deffell, Saunders, Moorse
+Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/02 Psalm 106 (H. Howells).m4a|106||Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone|The Complete Psalms Of David (Series 2) Vol. 8|H. Howells
+Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/03 Psalm 107 (R.J. Ashfield).m4a|107||Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone|The Complete Psalms Of David (Series 2) Vol. 8|R.J. Ashfield
+Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/04 Psalm 108 (M. How).m4a|108||Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone|The Complete Psalms Of David (Series 2) Vol. 8|M. How
+Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/05 Psalm 109 (Lucas; Kirk).m4a|109||Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone|The Complete Psalms Of David (Series 2) Vol. 8|Lucas; Kirk
+Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/06 Psalm 110 (Nardone).m4a|110||Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone|The Complete Psalms Of David (Series 2) Vol. 8|Nardone
+Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/07 Psalm 111 (J. Turle).m4a|111||Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone|The Complete Psalms Of David (Series 2) Vol. 8|J. Turle
+Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/08 Psalm 112 (W. Hayes).m4a|112||Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone|The Complete Psalms Of David (Series 2) Vol. 8|W. Hayes
+Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/09 Psalm 113 (Grindle; Nardone).m4a|113||Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone|The Complete Psalms Of David (Series 2) Vol. 8|Grindle; Nardone
+Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/10 Psalm 114 (C.W. Eden).m4a|114||Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone|The Complete Psalms Of David (Series 2) Vol. 8|C.W. Eden
+Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/11 Psalm 115 (R. Doveton).m4a|115||Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone|The Complete Psalms Of David (Series 2) Vol. 8|R. Doveton
+Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/12 Psalm 116 (Macpherson).m4a|116||Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone|The Complete Psalms Of David (Series 2) Vol. 8|Macpherson
+Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/13 Psalm 117 (G.H. Guest).m4a|117||Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone|The Complete Psalms Of David (Series 2) Vol. 8|G.H. Guest
+Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone/The Complete Psalms Of David (Series 2) Vol. 8/14 Psalm 118 (J. Nares; H.C. Stewart).m4a|118||Choir Of Worcester Cathedral _ Chirstopher Allsop _ Peter Nardone|The Complete Psalms Of David (Series 2) Vol. 8|J. Nares; H.C. Stewart
+Compilations/The Complete Psalms of David Volume 2/01 Psalm 20.m4a|20||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/02 Psalm 21.m4a|21||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/03 Psalm 22.m4a|22||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/04 Psalm 23.m4a|23||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/05 Psalm 24.m4a|24||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/06 Psalm 25.m4a|25||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/07 Psalm 26.m4a|26||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/08 Psalm 27.m4a|27||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/09 Psalm 28.m4a|28||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/10 Psalm 29.m4a|29||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/11 Psalm 30.m4a|30||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/12 Psalm 31.m4a|31||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/13 Psalm 32.m4a|32||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/14 Psalm 33.m4a|33||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/15 Psalm 34.m4a|34||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/16 Psalm 35.m4a|35||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David Volume 2/17 Psalm 36.m4a|36||Compilations|The Complete Psalms of David Volume 2|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/01 Psalm 89.m4a|89||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/02 Psalm 90.m4a|90||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/03 Psalm 91.m4a|91||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/04 Psalm 92.m4a|92||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/05 Psalm 93.m4a|93||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/06 Psalm 94.m4a|94||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/07 Psalm 95.m4a|95||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/08 Psalm 96.m4a|96||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/09 Psalm 97.m4a|97||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/10 Psalm 98.m4a|98||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/11 Psalm 99.m4a|99||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/12 Psalm 100.m4a|100||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/13 Psalm 101.m4a|101||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/14 Psalm 102.m4a|102||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/15 Psalm 103.m4a|103||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Series 2, Volume 7/16 Psalm 104.m4a|104||Compilations|The Complete Psalms of David, Series 2, Volume 7|
+Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/01 Psalm 37.m4a|37||Compilations|The Complete Psalms of David, Vol. 3 - Psalms 37-49|
+Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/02 Psalm 38.m4a|38||Compilations|The Complete Psalms of David, Vol. 3 - Psalms 37-49|
+Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/03 Psalm 39.m4a|39||Compilations|The Complete Psalms of David, Vol. 3 - Psalms 37-49|
+Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/04 Psalm 40.m4a|40||Compilations|The Complete Psalms of David, Vol. 3 - Psalms 37-49|
+Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/05 Psalm 41.m4a|41||Compilations|The Complete Psalms of David, Vol. 3 - Psalms 37-49|
+Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/06 Psalm 42.m4a|42||Compilations|The Complete Psalms of David, Vol. 3 - Psalms 37-49|
+Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/07 Psalm 43.m4a|43||Compilations|The Complete Psalms of David, Vol. 3 - Psalms 37-49|
+Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/08 Psalm 44.m4a|44||Compilations|The Complete Psalms of David, Vol. 3 - Psalms 37-49|
+Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/09 Psalm 45.m4a|45||Compilations|The Complete Psalms of David, Vol. 3 - Psalms 37-49|
+Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/10 Psalm 46.m4a|46||Compilations|The Complete Psalms of David, Vol. 3 - Psalms 37-49|
+Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/11 Psalm 47.m4a|47||Compilations|The Complete Psalms of David, Vol. 3 - Psalms 37-49|
+Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/12 Psalm 48.m4a|48||Compilations|The Complete Psalms of David, Vol. 3 - Psalms 37-49|
+Compilations/The Complete Psalms of David, Vol. 3 - Psalms 37-49/13 Psalm 49.m4a|49||Compilations|The Complete Psalms of David, Vol. 3 - Psalms 37-49|
+Compilations/The Complete Psalms of David, Vol. 4/01 Psalm 50.m4a|50||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/02 Psalm 51.m4a|51||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/03 Psalm 52.m4a|52||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/04 Psalm 53.m4a|53||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/05 Psalm 54.m4a|54||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/06 Psalm 55.m4a|55||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/07 Psalm 56.m4a|56||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/08 Psalm 57.m4a|57||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/09 Psalm 58.m4a|58||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/10 Psalm 59.m4a|59||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/11 Psalm 60.m4a|60||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/12 Psalm 61.m4a|61||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/13 Psalm 62.m4a|62||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/14 Psalm 63.m4a|63||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/15 Psalm 64.m4a|64||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/16 Psalm 65.m4a|65||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/17 Psalm 66.m4a|66||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 4/18 Psalm 67.m4a|67||Compilations|The Complete Psalms of David, Vol. 4|
+Compilations/The Complete Psalms of David, Vol. 5/01 Psalm 68.m4a|68||Compilations|The Complete Psalms of David, Vol. 5|
+Compilations/The Complete Psalms of David, Vol. 5/02 Psalm 69.m4a|69||Compilations|The Complete Psalms of David, Vol. 5|
+Compilations/The Complete Psalms of David, Vol. 5/03 Psalm 70.m4a|70||Compilations|The Complete Psalms of David, Vol. 5|
+Compilations/The Complete Psalms of David, Vol. 5/04 Psalm 71.m4a|71||Compilations|The Complete Psalms of David, Vol. 5|
+Compilations/The Complete Psalms of David, Vol. 5/05 Psalm 72.m4a|72||Compilations|The Complete Psalms of David, Vol. 5|
+Compilations/The Complete Psalms of David, Vol. 5/06 Psalm 73.m4a|73||Compilations|The Complete Psalms of David, Vol. 5|
+Compilations/The Complete Psalms of David, Vol. 5/07 Psalm 74.m4a|74||Compilations|The Complete Psalms of David, Vol. 5|
+Compilations/The Complete Psalms of David, Vol. 5/08 Psalm 75.m4a|75||Compilations|The Complete Psalms of David, Vol. 5|
+Compilations/The Complete Psalms of David, Vol. 5/09 Psalm 76.m4a|76||Compilations|The Complete Psalms of David, Vol. 5|
+Compilations/The Complete Psalms of David, Vol. 5/10 Psalm 77.m4a|77||Compilations|The Complete Psalms of David, Vol. 5|
+Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/01 Psalm 78.m4a|78||Lincoln Cathedral Choir|The Complete Psalms of David_ Volume 6, Series 2|
+Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/02 Psalm 79.m4a|79||Lincoln Cathedral Choir|The Complete Psalms of David_ Volume 6, Series 2|
+Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/03 Psalm 80.m4a|80||Lincoln Cathedral Choir|The Complete Psalms of David_ Volume 6, Series 2|
+Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/04 Psalm 81.m4a|81||Lincoln Cathedral Choir|The Complete Psalms of David_ Volume 6, Series 2|
+Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/05 Psalm 82.m4a|82||Lincoln Cathedral Choir|The Complete Psalms of David_ Volume 6, Series 2|
+Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/06 Psalm 83.m4a|83||Lincoln Cathedral Choir|The Complete Psalms of David_ Volume 6, Series 2|
+Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/07 Psalm 84.m4a|84||Lincoln Cathedral Choir|The Complete Psalms of David_ Volume 6, Series 2|
+Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/08 Psalm 85.m4a|85||Lincoln Cathedral Choir|The Complete Psalms of David_ Volume 6, Series 2|
+Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/09 Psalm 86.m4a|86||Lincoln Cathedral Choir|The Complete Psalms of David_ Volume 6, Series 2|
+Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/10 Psalm 87.m4a|87||Lincoln Cathedral Choir|The Complete Psalms of David_ Volume 6, Series 2|
+Lincoln Cathedral Choir/The Complete Psalms of David_ Volume 6, Series 2/11 Psalm 88.m4a|88||Lincoln Cathedral Choir|The Complete Psalms of David_ Volume 6, Series 2|
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-01 Psalm 133 (Turle).m4a|133||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Turle
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-02 Psalm 134 (Hurford).m4a|134||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Hurford
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-03 Psalm 135 (Grace, Overbury, Stafford-Smith).m4a|135||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Grace, Overbury, Stafford-Smith
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-04 Psalm 136 (Lloyd).m4a|136||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Lloyd
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-05 Psalm 137 (Alcock).m4a|137||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Alcock
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-06 Psalm 138 (Finzi).m4a|138||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Finzi
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-07 Psalm 139 (Rose, Gladstone).m4a|139||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Rose, Gladstone
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-08 Psalm 140 (Singleton).m4a|140||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Singleton
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-09 Psalm 141 (Goodenough, Armstrong).m4a|141||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Goodenough, Armstrong
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-10 Psalm 142 (Armes).m4a|142||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Armes
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-11 Psalm 143 (Marshall).m4a|143||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Marshall
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-12 Psalm 144 (Macpherson, Overbury).m4a|144||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Macpherson, Overbury
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-13 Psalm 145 (Hylton Stewart).m4a|145||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Hylton Stewart
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-14 Psalm 146 (Mellors).m4a|146||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Mellors
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-15 Psalm 147 (Whitlock).m4a|147||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Whitlock
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-16 Psalm 148 (Harrison).m4a|148||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Harrison
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-17 Psalm 149 (Whitlock).m4a|149||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Whitlock
+The Choir Of Chichester Cathedral/Complete Psalms Of David - Series 2/10-18 Psalm 150 (Ravalde).m4a|150||The Choir Of Chichester Cathedral|Complete Psalms Of David - Series 2|Ravalde
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/01 Psalm 1.m4a|1||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/02 Psalm 2.m4a|2||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/03 Psalm 3.m4a|3||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/04 Psalm 4.m4a|4||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/05 Psalm 5.m4a|5||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/06 Psalm 6.m4a|6||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/07 Psalm 7.m4a|7||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/08 Psalm 8.m4a|8||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/09 Psalm 9.m4a|9||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/10 Psalm 10.m4a|10||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/11 Psalm 11.m4a|11||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/12 Psalm 12.m4a|12||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/13 Psalm 13.m4a|13||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/14 Psalm 14.m4a|14||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/15 Psalm 15.m4a|15||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/16 Psalm 16.m4a|16||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/17 Psalm 17.m4a|17||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/18 Psalm 18.m4a|18||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
+The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan/The Complete Psalms of David (Series 2) Volume 1/19 Psalm 19.m4a|19||The Choir Of Exeter Cathedral_Andrew Millington_Paul Morgan|The Complete Psalms of David (Series 2) Volume 1|
 </script>
 <script type="text/plain" id="ot-texts">
 #!ctsdata
@@ -13863,6 +14022,24 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
     return out;
   }
 
+  /**
+   * Parse the recordings catalog (data/psalm_audio_files.txt):
+   * {file: {file, psalm, verses, artist, album, chants}}. Unknown columns are kept too.
+   */
+  function parseCatalog(text) {
+    var lines = (text || "").split(/\r?\n/).filter(function (l) { return l.trim(); });
+    var out = {};
+    if (!lines.length) return out;
+    var header = lines[0].split("|");
+    if (header.indexOf("file") < 0) return out;
+    lines.slice(1).forEach(function (line) {
+      var f = line.split("|"), row = {};
+      header.forEach(function (h, i) { row[h] = (f[i] || "").trim(); });
+      if (row.file) out[row.file] = row;
+    });
+    return out;
+  }
+
   /** Join a base URL and a relative path, escaping each path segment. */
   function joinUrl(base, path) {
     var b = (base || "").replace(/\/+$/, "");
@@ -13919,7 +14096,7 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
   }
 
   return {
-    parseMap: parseMap, recordingsFor: recordingsFor, joinUrl: joinUrl,
+    parseMap: parseMap, parseCatalog: parseCatalog, recordingsFor: recordingsFor, joinUrl: joinUrl,
     normalizeBase: normalizeBase, indexPicked: indexPicked, findPicked: findPicked, describe: describe
   };
 });
@@ -14071,6 +14248,7 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
   var A = window.RCLAudio;
   var AUDIO_KEYS = { base: "rcl.audio.base", map: "rcl.audio.map", mapName: "rcl.audio.mapName" };
   var BUILTIN_MAP = document.getElementById("audio-map").textContent;
+  var CATALOG = A.parseCatalog(document.getElementById("audio-files").textContent);
   var audio = { source: null, pendingHandle: null, mapName: "", parsed: A.parseMap(BUILTIN_MAP),
     queue: [], pos: 0, objectUrl: null, playingAlt: null };
   var ael = {
@@ -14228,7 +14406,10 @@ urn:cts:compnov:bible.deuteronomy.onkelos:34.12|וּלְכֹל יְדָא תַק
     ael.player.hidden = false;
     document.body.classList.add("has-player");
     ael.playerTitle.textContent = audio.shown + (audio.queue.length > 1 ? " (" + (audio.pos + 1) + " of " + audio.queue.length + ")" : "");
-    var meta = [d.title, d.album, d.artist].filter(Boolean).join(" · ");
+    // Artist from the recordings catalog first (falling back to the path), then title and album.
+    var entry = CATALOG[rec.file];
+    var artist = entry && entry.artist ? entry.artist : d.artist;
+    var meta = [artist, d.title, d.album].filter(Boolean).join(" \u00b7 ");
     ael.playerMeta.textContent = meta;
     if (rec.coverage === "excerpt") {
       ael.playerMeta.appendChild(h("div", { text: "The recording has more than the appointed verses (" +

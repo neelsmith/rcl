@@ -12,6 +12,7 @@ TEMPLATE = ("<meta name='version' content='@VERSION@'><p>v@VERSION@ <!-- @DATA_S
             "<script type='text/plain'><!-- @OT_INDEX@ --></script>"
             "<script type='text/plain'><!-- @OT_TEXTS@ --></script>"
             "<script type='text/plain'><!-- @AUDIO_MAP@ --></script><script>/* @AUDIO_JS@ */</script>"
+            "<script type='text/plain'><!-- @AUDIO_FILES@ --></script>"
             "<script>/* @LECTIONARY_JS@ */</script><script>/* @APP_JS@ */</script>")
 
 
@@ -49,11 +50,13 @@ class BuildTests(unittest.TestCase):
             build_web.read(os.path.join(build_web.WEB, "app.js")),
             ot_index=build_web.read(build_web.OT_INDEX), ot_texts=build_web.read(build_web.OT_TEXTS),
             audio_js=build_web.read(os.path.join(build_web.WEB, "audio.js")),
-            audio_map=build_web.read(build_web.AUDIO_MAP))
+            audio_map=build_web.read(build_web.AUDIO_MAP),
+            audio_files=build_web.read(build_web.AUDIO_FILES))
         self.assertIn('id="rcl-data"', html)
         self.assertIn("urn:cts:compnov:bible.psalms.septuagint:22.1|", html)
         self.assertIn("selection|psalm|file|coverage", html)
         self.assertIn("RCLAudio", html)
+        self.assertIn("file|psalm|verses|artist|album|chants", html)
         self.assertIn("a-advent-1|", html)
 
 

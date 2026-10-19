@@ -36,6 +36,7 @@ DATA = os.path.join(ROOT, "data", "rcl_readings.txt")
 OT_INDEX = os.path.join(ROOT, "data", "ot_index.txt")
 OT_TEXTS = os.path.join(ROOT, "data", "ot_passages.cex")
 AUDIO_MAP = os.path.join(ROOT, "data", "psalm_audio_map.txt")
+AUDIO_FILES = os.path.join(ROOT, "data", "psalm_audio_files.txt")
 PACKAGE_JSON = os.path.join(ROOT, "package.json")
 DEFAULT_OUT = os.path.join(ROOT, "dist", "index.html")
 
@@ -111,7 +112,7 @@ def release_errors(version, info):
 
 # -------------------------------------------------------------------- build
 def build(data_text, template, lectionary_js, app_js, today=None, version="0.0.0",
-          ot_index="", ot_texts="", audio_js="", audio_map=""):
+          ot_index="", ot_texts="", audio_js="", audio_map="", audio_files=""):
     """Return the finished HTML. Raises ValueError if the data is invalid."""
     lines = data_text.splitlines()
     errors = validate_lines(lines)
@@ -119,7 +120,8 @@ def build(data_text, template, lectionary_js, app_js, today=None, version="0.0.0
         raise ValueError("data file is invalid:\n  " + "\n  ".join(errors[:20]))
     for name, text in (("data", data_text), ("lectionary.js", lectionary_js), ("app.js", app_js),
                        ("ot_index.txt", ot_index), ("ot_passages.cex", ot_texts),
-                       ("audio.js", audio_js), ("psalm_audio_map.txt", audio_map)):
+                       ("audio.js", audio_js), ("psalm_audio_map.txt", audio_map),
+                       ("psalm_audio_files.txt", audio_files)):
         if "</script" in text.lower():
             raise ValueError(f"{name} contains '</script', which would break the page")
     rows = len([ln for ln in lines if ln.strip()]) - 1
@@ -131,6 +133,7 @@ def build(data_text, template, lectionary_js, app_js, today=None, version="0.0.0
         "<!-- @OT_INDEX@ -->": (ot_index.strip(), 1),
         "<!-- @OT_TEXTS@ -->": (ot_texts.strip(), 1),
         "<!-- @AUDIO_MAP@ -->": (audio_map.strip(), 1),
+        "<!-- @AUDIO_FILES@ -->": (audio_files.strip(), 1),
         "/* @AUDIO_JS@ */": (audio_js, 1),
         "@VERSION@": (version, None),
         "/* @LECTIONARY_JS@ */": (lectionary_js, 1),
@@ -161,7 +164,8 @@ def main(argv=None):
         html = build(read(DATA), read(os.path.join(WEB, "template.html")),
                      read(os.path.join(WEB, "lectionary.js")), read(os.path.join(WEB, "app.js")),
                      version=shown, ot_index=read(OT_INDEX), ot_texts=read(OT_TEXTS),
-                     audio_js=read(os.path.join(WEB, "audio.js")), audio_map=read(AUDIO_MAP))
+                     audio_js=read(os.path.join(WEB, "audio.js")), audio_map=read(AUDIO_MAP),
+                     audio_files=read(AUDIO_FILES))
     except (OSError, ValueError) as exc:
         print(f"build failed: {exc}", file=sys.stderr)
         return 1

@@ -1,5 +1,12 @@
 ---
-title: "`rcl`"
+title: "`rcl`: read from the Revised Common Lectionary"
 ---
 
-Data resources and a web app for reading the Revised Common Lectionary.
+
+The [`rcl` github repository](https://github.com/neelsmith/rcl) hosts data and a web app for reading selections assigned in the [Revised Common Lectionary](https://en.wikipedia.org/wiki/Revised_Common_Lectionary).
+
+
+
+
+- **Use the app**: hosted at [https://neelsmith.github.io/rcl/rcl.html](https://neelsmith.github.io/rcl/rcl.html)
+- **More info**: [about the app](./about/)
