@@ -2,6 +2,8 @@ project:
   type: website
   output-dir: quarto_build
 
+version: "0.2.0" 
+
 execute:
   freeze: auto
 date: last-modified  
@@ -15,12 +17,19 @@ format:
 
 website:
   title: "rcl"
+  page-footer:
+    center: "Documentation for version **{{< meta version >}}**"
+
   navbar:
     background: primary
     search: true
     left:
       - text: "Home"
         file: index.qmd
+      - text: "How to use the app"
+        file: how/index.qmd        
+      - text: "About"
+        file: about/index.qmd
         
      
 

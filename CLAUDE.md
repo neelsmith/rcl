@@ -1,4 +1,4 @@
-`rcs` web app and data resources for working with the Revised Common Lectionary
+`rcl` web app and data resources for working with the Revised Common Lectionary
 
 ## Overview
 

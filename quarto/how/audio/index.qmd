@@ -1,0 +1,17 @@
+---
+title: Audio
+---
+
+::: {.callout-note}
+*Content TBA*
+:::
+
+
+## Use the default set of recordings
+
+[*The Complete Psalms of David Series 2*](https://www.prioryrecords.co.uk/index.php?route=product/category&path=61_89_131) is cataloged in [psalm_audio_files.txt](https://github.com/neelsmith/rcl/blob/main/data/psalm_audio_files.txt) and mapped in [psalm_audio_map.txt](https://github.com/neelsmith/rcl/blob/main/data/psalm_audio_map.txt).
+
+
+## Use your own audio
+
+- catalog format

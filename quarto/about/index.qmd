@@ -1,0 +1,7 @@
+---
+title: "About `rcl`"
+---
+
+
+- sources for texts
+- [citation values](./citation.qmd)

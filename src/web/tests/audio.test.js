@@ -92,3 +92,17 @@ test("the built-in mapping covers every psalm citation in the readings", () => {
     }
   }
 });
+
+test("parse the recordings catalog", () => {
+  const cat = A.parseCatalog([
+    "file|psalm|verses|artist|album|chants",
+    "Choir A/Album/01 Psalm 1.m4a|1||Choir A|Album|",
+    "Compilations/Vol 4/02 Psalm 51.m4a|51||Compilations|Vol 4|",
+  ].join("\n"));
+  assert.equal(cat["Choir A/Album/01 Psalm 1.m4a"].artist, "Choir A");
+  assert.equal(cat["Compilations/Vol 4/02 Psalm 51.m4a"].album, "Vol 4");
+  assert.deepEqual(A.parseCatalog(""), {});
+  assert.deepEqual(A.parseCatalog("a|b\n1|2"), {});
+  const real = A.parseCatalog(fs.readFileSync(path.join(__dirname, "..", "..", "..", "data", "psalm_audio_files.txt"), "utf8"));
+  assert.equal(Object.keys(real).length, 154);
+});

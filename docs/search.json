@@ -1,0 +1,65 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "rcl: read from the Revised Common Lectionary",
+    "section": "",
+    "text": "The rcl github repository hosts data and a web app for reading selections assigned in the Revised Common Lectionary.\n\nUse the app: hosted at https://neelsmith.github.io/rcl/rcl.html\nMore info: about the app"
+  },
+  {
+    "objectID": "about/citation.html",
+    "href": "about/citation.html",
+    "title": "Citation of Biblical passages",
+    "section": "",
+    "text": "CautionDocumentation in progress\n\n\n\nThis page will document discrepancies in canonical citation of Biblical passages and how the rcl app handles them. Its currently incomplete and in progress state includes some AI generated slop to review.\nThis page documents discrepancies in canonical citation of Biblical passages and how the rcl app handles them.\nrcl follows the Episcopal Church’s readings. In the following instances, those depart from the RCL:"
+  },
+  {
+    "objectID": "about/citation.html#numbering-bcp-citations-compared-with-the-compnov-texts",
+    "href": "about/citation.html#numbering-bcp-citations-compared-with-the-compnov-texts",
+    "title": "Citation of Biblical passages",
+    "section": "Numbering: BCP citations compared with the compnov texts",
+    "text": "Numbering: BCP citations compared with the compnov texts\n\nAdjusted automatically (Septuagint and Vulgate Psalms)\n\n\n\nBCP\nSeptuagint / Vulgate\n\n\n\n\nPsalms 1-9 and 148-150\nsame number\n\n\n10\n9:22 onward\n\n\n11-113\nnumber minus 1\n\n\n114\n113:1-8\n\n\n115\n113:9 onward\n\n\n116:1-9\n114\n\n\n116:10-19\n115\n\n\n117-146\nnumber minus 1\n\n\n147:1-11\n146\n\n\n147:12-20\n147:1-9\n\n\n\n\n\nNot adjusted (flagged in the app)\n\nPsalm titles: the Masoretic, Septuagint and Vulgate count a psalm’s title as verse 1 or 2; the BCP does not. Verse numbers may therefore be off by one or two.\nBCP Psalter verse divisions that differ from the corpus versions:\n\nNot found at that number in any version: 17:16, 37:41-42, 104:37 (also cited as 104:37b), 147:21c.\nOnly partly found: 50:23-24, 62:6-14, 132:14-19, 145:15-22, 145:18-22, 147:13-21.\n\nDifferent chapter divisions:\n\nMalachi 4:1-2a = Masoretic/Septuagint 3:19-20a (not found in those versions).\nJoel 2:28-32 = Masoretic/Septuagint 3:1-5, so Joel 2:23-32 is only partly found.\nHosea 1:10 = Masoretic/Septuagint 2:1, so Hosea 1:2-10 is only partly found.\n2 Samuel 18:33 = Masoretic/Septuagint 19:1, so 2 Samuel 18:31-33 is only partly found.\n\nSeptuagint text differs:\n\n1 Samuel 17:19-23 and 17:57-18:5 are not found, and 18:10-16 is only partly found. These passages are missing from the Greek text.\nJeremiah 26:1-9 and 32:6-15 are only partly found, and 32:1-3a is not found. These chapters are numbered and ordered differently in the Septuagint.\nLamentations 3:19-24 is only partly found.\n\nVulgate: Job 42:10-17 and Haggai 1:15b-2:9 are only partly found.\n\nThe app shows whatever text exists at the cited numbers, and says when a reference is missing or only partly found."
+  },
+  {
+    "objectID": "how/index.html",
+    "href": "how/index.html",
+    "title": "How to use the rcl app",
+    "section": "",
+    "text": "The current release version is always installed on the project’s github pages site at https://neelsmith.github.io/rcl/rcl.html."
+  },
+  {
+    "objectID": "how/index.html#how-to",
+    "href": "how/index.html#how-to",
+    "title": "How to use the rcl app",
+    "section": "How to…",
+    "text": "How to…\n\nchoose dates\nchoose texts\nadjust view\nconfigure and play audio"
+  },
+  {
+    "objectID": "how/audio/index.html",
+    "href": "how/audio/index.html",
+    "title": "Audio",
+    "section": "",
+    "text": "Note\n\n\n\nContent TBA"
+  },
+  {
+    "objectID": "how/audio/index.html#use-the-default-set-of-recordings",
+    "href": "how/audio/index.html#use-the-default-set-of-recordings",
+    "title": "Audio",
+    "section": "Use the default set of recordings",
+    "text": "Use the default set of recordings\nThe Complete Psalms of David Series 2 is cataloged in psalm_audio_files.txt and mapped in psalm_audio_map.txt."
+  },
+  {
+    "objectID": "how/audio/index.html#use-your-own-audio",
+    "href": "how/audio/index.html#use-your-own-audio",
+    "title": "Audio",
+    "section": "Use your own audio",
+    "text": "Use your own audio\n\ncatalog format"
+  },
+  {
+    "objectID": "about/index.html",
+    "href": "about/index.html",
+    "title": "About rcl",
+    "section": "",
+    "text": "sources for texts\ncitation values"
+  }
+]

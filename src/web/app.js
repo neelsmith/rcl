@@ -6,7 +6,7 @@
   var cex = R.parseCex(document.getElementById("ot-texts").textContent);
   var otIndex = R.parseIndex(document.getElementById("ot-index").textContent);
   var otBooks = R.indexedBooks(otIndex);
-  var VERSIONS_KEY = "rcs.versions";
+  var VERSIONS_KEY = "rcl.versions";
 
   var SEASONS = {
     advent: "Advent", christmas: "Christmas", epiphany: "Season after the Epiphany",
@@ -143,6 +143,7 @@
   var A = window.RCLAudio;
   var AUDIO_KEYS = { base: "rcl.audio.base", map: "rcl.audio.map", mapName: "rcl.audio.mapName" };
   var BUILTIN_MAP = document.getElementById("audio-map").textContent;
+  var CATALOG = A.parseCatalog(document.getElementById("audio-files").textContent);
   var audio = { source: null, pendingHandle: null, mapName: "", parsed: A.parseMap(BUILTIN_MAP),
     queue: [], pos: 0, objectUrl: null, playingAlt: null };
   var ael = {
@@ -300,7 +301,10 @@
     ael.player.hidden = false;
     document.body.classList.add("has-player");
     ael.playerTitle.textContent = audio.shown + (audio.queue.length > 1 ? " (" + (audio.pos + 1) + " of " + audio.queue.length + ")" : "");
-    var meta = [d.title, d.album, d.artist].filter(Boolean).join(" · ");
+    // Artist from the recordings catalog first (falling back to the path), then title and album.
+    var entry = CATALOG[rec.file];
+    var artist = entry && entry.artist ? entry.artist : d.artist;
+    var meta = [artist, d.title, d.album].filter(Boolean).join(" \u00b7 ");
     ael.playerMeta.textContent = meta;
     if (rec.coverage === "excerpt") {
       ael.playerMeta.appendChild(h("div", { text: "The recording has more than the appointed verses (" +

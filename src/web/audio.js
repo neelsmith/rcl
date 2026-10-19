@@ -74,6 +74,24 @@
     return out;
   }
 
+  /**
+   * Parse the recordings catalog (data/psalm_audio_files.txt):
+   * {file: {file, psalm, verses, artist, album, chants}}. Unknown columns are kept too.
+   */
+  function parseCatalog(text) {
+    var lines = (text || "").split(/\r?\n/).filter(function (l) { return l.trim(); });
+    var out = {};
+    if (!lines.length) return out;
+    var header = lines[0].split("|");
+    if (header.indexOf("file") < 0) return out;
+    lines.slice(1).forEach(function (line) {
+      var f = line.split("|"), row = {};
+      header.forEach(function (h, i) { row[h] = (f[i] || "").trim(); });
+      if (row.file) out[row.file] = row;
+    });
+    return out;
+  }
+
   /** Join a base URL and a relative path, escaping each path segment. */
   function joinUrl(base, path) {
     var b = (base || "").replace(/\/+$/, "");
@@ -130,7 +148,7 @@
   }
 
   return {
-    parseMap: parseMap, recordingsFor: recordingsFor, joinUrl: joinUrl,
+    parseMap: parseMap, parseCatalog: parseCatalog, recordingsFor: recordingsFor, joinUrl: joinUrl,
     normalizeBase: normalizeBase, indexPicked: indexPicked, findPicked: findPicked, describe: describe
   };
 });
