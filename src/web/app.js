@@ -6,7 +6,7 @@
   var cex = R.parseCex(document.getElementById("ot-texts").textContent);
   var otIndex = R.parseIndex(document.getElementById("ot-index").textContent);
   var otBooks = R.indexedBooks(otIndex);
-  var VERSIONS_KEY = "rcs.versions";
+  var VERSIONS_KEY = "rcl.versions";
 
   var SEASONS = {
     advent: "Advent", christmas: "Christmas", epiphany: "Season after the Epiphany",
