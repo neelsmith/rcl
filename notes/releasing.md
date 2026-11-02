@@ -26,12 +26,12 @@ version's tooltip.
 2. Commit, then tag: `git tag v0.1.0` (the tag must be `v` + the version in `package.json`).
 3. `npm run build:release` — refuses unless the tree is clean and HEAD has that tag.
 4. `git push && git push origin v0.1.0`, then create the GitHub release from the tag and attach
-   `dist/index.html` (e.g. `gh release create v0.1.0 dist/index.html --notes-file <notes>`).
+   `dist/rcl.html` (e.g. `gh release create v0.1.0 dist/rcl.html --notes-file <notes>`).
 
 ## npm scripts
 | Command               | Does                                                        |
 |-----------------------|-------------------------------------------------------------|
-| `npm run build`       | build `dist/index.html`                                     |
+| `npm run build`       | build `dist/rcl.html`                                     |
 | `npm run build:release` | build, only from a clean checkout tagged `v<version>`     |
 | `npm test`            | Python and JavaScript tests (`test:py`, `test:js`)          |
 | `npm run check`       | validate the readings and book-URN data files               |

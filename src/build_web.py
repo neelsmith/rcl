@@ -1,4 +1,4 @@
-"""Build the self-contained web app: dist/index.html.
+"""Build the self-contained web app: dist/rcl.html.
 
 Inlines data/rcl_readings.txt, data/ot_index.txt and data/ot_passages.cex (made by
 src/rcl/passages.py), data/psalm_audio_map.txt (the default psalm-recording
@@ -48,7 +48,7 @@ ICON_LINKS = [
     ("apple-touch-icon.png", "apple-touch-icon", "180x180"),
 ]
 PACKAGE_JSON = os.path.join(ROOT, "package.json")
-DEFAULT_OUT = os.path.join(ROOT, "dist", "index.html")
+DEFAULT_OUT = os.path.join(ROOT, "dist", "rcl.html")
 
 # Semantic Versioning 2.0.0 core with optional pre-release (no build metadata in the file).
 SEMVER = re.compile(
