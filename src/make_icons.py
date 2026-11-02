@@ -11,7 +11,7 @@ src/web/icons/ (committed):
     icon-192.png                     larger icon, e.g. Android home screen (transparent)
     apple-touch-icon.png             180x180, opaque (iOS shows transparency as black)
 
-`npm run build` embeds all four in dist/index.html as data URIs.
+`npm run build` embeds all four in dist/rcl.html as data URIs.
 
 The near-white background around the artwork is made transparent (flood-filled
 from the edges, so white areas inside the artwork are kept), the artwork is

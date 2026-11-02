@@ -1,4 +1,4 @@
-// Browser test of the built page (dist/index.html) using Playwright.
+// Browser test of the built page (dist/rcl.html) using Playwright.
 // Skipped automatically when Playwright or the built page is unavailable.
 //   python3 src/build_web.py && node --test src/web/tests/
 "use strict";
@@ -8,7 +8,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { pathToFileURL } = require("node:url");
 
-const PAGE = path.join(__dirname, "..", "..", "..", "dist", "index.html");
+const PAGE = path.join(__dirname, "..", "..", "..", "dist", "rcl.html");
 let playwright = null;
 try { playwright = require("playwright"); } catch (e) { /* not installed */ }
 const skip = !playwright ? "playwright not installed" : !fs.existsSync(PAGE) ? "run python3 src/build_web.py first" : false;
