@@ -7,7 +7,7 @@ from rcl.datafile import COLUMNS
 HEADER = "|".join(COLUMNS)
 ROW = ("a-advent-1|The First Sunday of Advent|A|advent|||Isaiah 2:1-2:5|Psalm 122|"
        "Romans 13:11-13:14|Matthew 24:36-24:44||https://example.org/a")
-TEMPLATE = ("<meta name='version' content='@BUILD@'><p>v@VERSION@ <!-- @DATA_SUMMARY@ --></p>"
+TEMPLATE = ("<meta name='version' content='@BUILD@'><!-- @ICONS@ --><p>v@VERSION@ <!-- @DATA_SUMMARY@ --></p>"
             "<script type='text/plain'><!-- @DATA@ --></script>"
             "<script type='text/plain'><!-- @OT_INDEX@ --></script>"
             "<script type='text/plain'><!-- @OT_TEXTS@ --></script>"
@@ -53,13 +53,29 @@ class BuildTests(unittest.TestCase):
             ot_index=build_web.read(build_web.OT_INDEX), ot_texts=build_web.read(build_web.OT_TEXTS),
             audio_js=build_web.read(os.path.join(build_web.WEB, "audio.js")),
             audio_map=build_web.read(build_web.AUDIO_MAP),
-            audio_files=build_web.read(build_web.AUDIO_FILES))
+            audio_files=build_web.read(build_web.AUDIO_FILES), icons=build_web.icon_links())
         self.assertIn('id="rcl-data"', html)
         self.assertIn("urn:cts:compnov:bible.psalms.septuagint:22.1|", html)
         self.assertIn("selection|psalm|file|coverage", html)
         self.assertIn("RCLAudio", html)
         self.assertIn("file|psalm|verses|artist|album|chants", html)
+        self.assertIn('<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,', html)
+        self.assertIn('<link rel="apple-touch-icon"', html)
         self.assertIn("a-advent-1|", html)
+
+    def test_icon_links(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(build_web.icon_links(d), "")
+            with open(os.path.join(d, "favicon-32.png"), "wb") as fh:
+                fh.write(b"\x89PNG fake")
+            tags = build_web.icon_links(d)
+        self.assertEqual(tags.count("<link"), 1)
+        self.assertIn('sizes="32x32" href="data:image/png;base64,iVBORyBmYWtl"', tags)
+
+    def test_committed_icons_exist(self):
+        for name, _, _ in build_web.ICON_LINKS:
+            self.assertTrue(os.path.exists(os.path.join(build_web.ICONS, name)), name)
 
 
 

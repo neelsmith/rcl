@@ -1,8 +1,8 @@
 # Version info
 
-Current release: **0.2.1**.
+Current release: **0.2.2**.
 
-**0.2.2**, *??*: Tweak version display in notes. Organized audio recordings in consistently named directories.
+**0.2.2**, *Nov. 2, 2026*: Tweak version display in notes. Organized audio recordings in consistently named directories. Added icon for use as webapp.
 
 **0.2.1**, *Oct. 19, 2026*: minor changes to arrangement of content in rcl.html; no functional changes. Addition of initial placeholder pages for quarto web site.
 

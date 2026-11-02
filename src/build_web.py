@@ -39,6 +39,14 @@ OT_INDEX = os.path.join(ROOT, "data", "ot_index.txt")
 OT_TEXTS = os.path.join(ROOT, "data", "ot_passages.cex")
 AUDIO_MAP = os.path.join(ROOT, "data", "psalm_audio_map.txt")
 AUDIO_FILES = os.path.join(ROOT, "data", "psalm_audio_files.txt")
+ICONS = os.path.join(WEB, "icons")
+# (file in src/web/icons, rel, sizes) -- made by src/make_icons.py
+ICON_LINKS = [
+    ("favicon-32.png", "icon", "32x32"),
+    ("favicon-16.png", "icon", "16x16"),
+    ("icon-192.png", "icon", "192x192"),
+    ("apple-touch-icon.png", "apple-touch-icon", "180x180"),
+]
 PACKAGE_JSON = os.path.join(ROOT, "package.json")
 DEFAULT_OUT = os.path.join(ROOT, "dist", "index.html")
 
@@ -112,9 +120,25 @@ def release_errors(version, info):
     return errors
 
 
+# -------------------------------------------------------------------- icons
+def icon_links(icons_dir=None):
+    """<link> tags with the icons embedded as data URIs ("" if there are no icons)."""
+    import base64
+    icons_dir = icons_dir or ICONS
+    tags = []
+    for name, rel, sizes in ICON_LINKS:
+        path = os.path.join(icons_dir, name)
+        if not os.path.exists(path):
+            continue
+        with open(path, "rb") as fh:
+            data = base64.b64encode(fh.read()).decode("ascii")
+        tags.append(f'<link rel="{rel}" type="image/png" sizes="{sizes}" href="data:image/png;base64,{data}">')
+    return "\n".join(tags)
+
+
 # -------------------------------------------------------------------- build
 def build(data_text, template, lectionary_js, app_js, today=None, version="0.0.0", build_id=None,
-          ot_index="", ot_texts="", audio_js="", audio_map="", audio_files=""):
+          ot_index="", ot_texts="", audio_js="", audio_map="", audio_files="", icons=""):
     """Return the finished HTML. Raises ValueError if the data is invalid."""
     lines = data_text.splitlines()
     errors = validate_lines(lines)
@@ -136,6 +160,7 @@ def build(data_text, template, lectionary_js, app_js, today=None, version="0.0.0
         "<!-- @OT_TEXTS@ -->": (ot_texts.strip(), 1),
         "<!-- @AUDIO_MAP@ -->": (audio_map.strip(), 1),
         "<!-- @AUDIO_FILES@ -->": (audio_files.strip(), 1),
+        "<!-- @ICONS@ -->": (icons, 1),
         "/* @AUDIO_JS@ */": (audio_js, 1),
         "@VERSION@": (version, None),          # plain version, shown in the footer
         "@BUILD@": (build_id or version, None),  # with git build metadata: meta tag and tooltip
@@ -168,7 +193,7 @@ def main(argv=None):
                      read(os.path.join(WEB, "lectionary.js")), read(os.path.join(WEB, "app.js")),
                      version=version, build_id=shown, ot_index=read(OT_INDEX), ot_texts=read(OT_TEXTS),
                      audio_js=read(os.path.join(WEB, "audio.js")), audio_map=read(AUDIO_MAP),
-                     audio_files=read(AUDIO_FILES))
+                     audio_files=read(AUDIO_FILES), icons=icon_links())
     except (OSError, ValueError) as exc:
         print(f"build failed: {exc}", file=sys.stderr)
         return 1
