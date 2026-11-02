@@ -301,10 +301,12 @@
     ael.player.hidden = false;
     document.body.classList.add("has-player");
     ael.playerTitle.textContent = audio.shown + (audio.queue.length > 1 ? " (" + (audio.pos + 1) + " of " + audio.queue.length + ")" : "");
-    // Artist from the recordings catalog first (falling back to the path), then title and album.
+    // Artist, then title, then album; artist and album from the recordings catalog,
+    // falling back to the folder names in the path.
     var entry = CATALOG[rec.file];
     var artist = entry && entry.artist ? entry.artist : d.artist;
-    var meta = [artist, d.title, d.album].filter(Boolean).join(" \u00b7 ");
+    var album = entry && entry.album ? entry.album : d.album;
+    var meta = [artist, d.title, album].filter(Boolean).join(" \u00b7 ");
     ael.playerMeta.textContent = meta;
     if (rec.coverage === "excerpt") {
       ael.playerMeta.appendChild(h("div", { text: "The recording has more than the appointed verses (" +

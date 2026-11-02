@@ -1,6 +1,6 @@
 {
   "name": "rcl",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Revised Common Lectionary (Episcopal) data and a single-file web app for reading the appointed lessons",
   "private": true,
   "license": "UNLICENSED",
@@ -16,6 +16,7 @@
     "test:js": "node --test src/web/tests/*.test.js",
     "check": "python3 src/rcl/datafile.py data/rcl_readings.txt && python3 src/rcl/books.py data/book_urns.txt data/rcl_readings.txt",
     "texts": "python3 src/rcl/passages.py",
-    "audio-map": "python3 src/rcl/audio.py"
+    "audio-map": "python3 src/rcl/audio.py",
+    "icons": "python3 src/make_icons.py"
   }
 }

@@ -34,8 +34,11 @@ test("calendar and readings UI", { skip }, async (t) => {
     await t.test("shows the version in the footer", async () => {
       const meta = await page.getAttribute('meta[name="version"]', "content");
       assert.match(meta, /^\d+\.\d+\.\d+/);
-      assert.equal(await page.innerText("#app-version"), "v" + meta);
-      assert.match(await page.innerText("footer"), new RegExp("^v" + meta.replace(/[.+]/g, "\\$&") + " · Readings from lectionarypage\\.net"));
+      // the footer shows the plain version; build metadata (if any) is only in the meta tag and tooltip
+      const plain = meta.split("+")[0];
+      assert.equal(await page.innerText("#app-version"), "v" + plain);
+      assert.equal(await page.getAttribute("#app-version", "title"), "Build " + meta);
+      assert.match(await page.innerText("footer"), new RegExp("^v" + plain.replace(/\./g, "\\.") + " · Readings from lectionarypage\\.net"));
     });
 
     await t.test("a Sunday shows both tracks and a transferred feast", async () => {
@@ -192,10 +195,15 @@ test("calendar and readings UI", { skip }, async (t) => {
       })();
       const root = fs.mkdtempSync(path.join(os.tmpdir(), "rcl-music-"));
       const music = path.join(root, "music");
-      const album = path.join(music, "Compilations", "The Complete Psalms of David, Series 2, Volume 7");
-      fs.mkdirSync(album, { recursive: true });
-      fs.writeFileSync(path.join(album, "11 Psalm 99.m4a"), wav);
-      fs.writeFileSync(path.join(album, "08 Psalm 96.m4a"), wav);
+      // Put the WAV at the catalogued paths for Psalms 96 and 99 (whatever the folders are called).
+      const catalog = fs.readFileSync(path.join(__dirname, "..", "..", "..", "data", "psalm_audio_files.txt"), "utf8")
+        .split("\n").slice(1).filter(Boolean).map((l) => l.split("|"));
+      const rec = (n) => catalog.find((f) => f[1] === String(n));
+      const ps99 = rec(99), ps96 = rec(96);
+      for (const r of [ps99, ps96]) {
+        fs.mkdirSync(path.dirname(path.join(music, r[0])), { recursive: true });
+        fs.writeFileSync(path.join(music, r[0]), wav);
+      }
 
       await page.goto(url + "#2026-10-18");
       await page.evaluate(() => localStorage.clear());
@@ -217,7 +225,7 @@ test("calendar and readings UI", { skip }, async (t) => {
       });
       assert.match(await page.innerText("#player-title"), /Psalm 99/);
       // the player lists the catalog's artist first, then the recording title and album
-      assert.match(await page.innerText("#player-meta"), /^Compilations · Psalm 99 · The Complete Psalms of David, Series 2, Volume 7/);
+      assert.ok((await page.innerText("#player-meta")).startsWith(`${ps99[3]} · Psalm 99 · ${ps99[4]}`));
       assert.equal(await page.locator("button.play.playing").count(), 1);
       // Psalm 96:1-9, (96:10-13) is two selections of one recording: an excerpt.
       await page.click('button.play[data-alt^="Psalm 96"]');
@@ -240,7 +248,7 @@ test("calendar and readings UI", { skip }, async (t) => {
 
       // A custom mapping file replaces the built-in one until reset.
       const mapFile = path.join(root, "my-map.txt");
-      fs.writeFileSync(mapFile, "selection|file\n1|Compilations/The Complete Psalms of David, Series 2, Volume 7/11 Psalm 99.m4a\n");
+      fs.writeFileSync(mapFile, `selection|file\n1|${ps99[0]}\n`);
       await page.setInputFiles("#audio-map-input", mapFile);
       await page.waitForFunction(() => /Custom/.test(document.getElementById("audio-map-status").textContent));
       assert.match(await page.textContent("#audio-map-status"), /Custom mapping “my-map.txt”: 1 psalm selection\./);
